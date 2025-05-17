@@ -1,0 +1,33 @@
+@font-face {
+  font-family: 'Ethnocentric';
+  src: url('/fonts/ethnocentric-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ethnocentric';
+  src: url('/fonts/ethnocentric-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PlanetKosmos';
+  src: url('/fonts/PlanetKosmos.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+
+:root {
+  --headline-font: 'Planet Kosmos', 'Inter', sans-serif;
+}
+
+.logo, h1, h2 {
+  font-family: var(--headline-font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

@@ -1,0 +1,75 @@
+.agenda-container {
+  padding: 1rem;
+  font-family: sans-serif;
+}
+
+.agenda-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.titulo-agenda {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.seletor-data {
+  position: relative;
+}
+
+.botao-data {
+  padding: 0.5rem 1rem;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.calendario-container {
+  position: absolute;
+  top: 2.5rem;
+  right: 0;
+  z-index: 10;
+  background: black;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.agenda-grid {
+  display: grid;
+  grid-template-columns: 100px repeat(auto-fit, minmax(150px, 1fr));
+  border-top: 1px solid #e5e7eb;
+}
+
+.barbeiro-header {
+  text-align: center;
+  font-weight: 600;
+  padding: 0.5rem;
+  background-color: black;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.hora-label {
+  text-align: right;
+  padding: 1rem 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  border-right: 1px solid #e5e7eb;
+}
+
+.celula-agenda {
+  border: 1px solid #e5e7eb;
+  height: 4rem;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f1f5f9;
+  }
+}

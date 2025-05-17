@@ -1,0 +1,28 @@
+.navbar {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--pf-gray-dark);
+  transition: all var(--transition-speed) ease;
+  
+  &.scrolled {
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 0.75rem 0;
+    backdrop-filter: blur(10px);
+  }
+  
+  .navbar-brand {
+    font-size: 2rem;
+    letter-spacing: 0.05em;
+    transition: all var(--transition-speed) ease;
+    
+    &:hover {
+      color: var(--pf-neon-lime);
+      text-shadow: 0 0 8px rgba(181, 255, 0, 0.5);
+    }
+  }
+}
+
+.login-form {
+  @media (max-width: 991.98px) {
+    margin-top: 1rem;
+  }
+}

@@ -1,0 +1,61 @@
+.background-grid {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 12px;
+  padding: 0;
+  pointer-events: none;
+  overflow: hidden;
+
+  .bg-image-container {
+    position: relative;
+    width: 100%;
+    height: 100%; // Preenche 100% da célula
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    aspect-ratio: auto; // REMOVE o aspecto quadrado forçado
+  }
+
+  .bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;    // OU experimente `contain` se preferir não cortar
+    object-position: center;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    transform: scale(1.02);
+    opacity: 0.8;
+    filter: brightness(1) contrast(1.2) saturate(1.3);
+    mix-blend-mode: normal;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), #000);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .bg-image-container:nth-child(odd) .bg-image {
+    animation: fadein 1.5s ease both;
+  }
+
+  .bg-image-container:nth-child(even) .bg-image {
+    animation: fadein 1.5s ease 0.3s both;
+  }
+
+  @keyframes fadein {
+    from {
+      opacity: 0;
+      transform: scale(1.1);
+    }
+    to {
+      opacity: 0.8;
+      transform: scale(1.02);
+    }
+  }
+}

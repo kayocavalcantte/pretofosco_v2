@@ -1,0 +1,22 @@
+.site-footer {
+  border-top: 1px solid var(--pf-gray-dark);
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  margin-top: auto;
+  
+  .footer-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .footer-link {
+    color: var(--pf-white);
+    text-decoration: none;
+    transition: all var(--transition-speed) ease;
+    
+    &:hover {
+      color: var(--pf-neon-lime);
+    }
+  }
+}
