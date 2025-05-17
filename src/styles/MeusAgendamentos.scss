@@ -1,0 +1,95 @@
+.meus-agendamentos-section {
+  padding: 5rem 0;
+  min-height: 80vh;
+  color: white;
+
+  h2 {
+    color: #c7f907;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .agendamento-card {
+    background-color: rgba(0, 0, 0, 0.85);
+    border: 1px solid #3a3a3a;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 0 8px rgba(199, 249, 7, 0.1);
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.01);
+      box-shadow: 0 0 10px rgba(199, 249, 7, 0.15);
+    }
+
+    h5 {
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    p {
+      color: #cccccc;
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .status-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-top: 4px;
+
+      &.em-espera {
+        color: #f3f907;
+      }
+
+      &.concluido {
+        color: #00ff88;
+      }
+
+      &.cancelado {
+        color: #ff4b4b;
+      }
+    }
+
+    .icon-btn {
+      color: #c7f907;
+      font-size: 1.15rem;
+      cursor: pointer;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #e4ff88;
+      }
+
+      &.trash {
+        color: #ff5555;
+
+        &:hover {
+          color: #ff1f1f;
+        }
+      }
+    }
+  }
+
+  .tooltip.show {
+    .tooltip-inner {
+      background-color: #000 !important;
+      color: #fff !important;
+      font-size: 0.85rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    }
+
+    &.bs-tooltip-top .tooltip-arrow::before,
+    &.bs-tooltip-bottom .tooltip-arrow::before,
+    &.bs-tooltip-start .tooltip-arrow::before,
+    &.bs-tooltip-end .tooltip-arrow::before {
+      border-color: #000 !important;
+    }
+  }
+}

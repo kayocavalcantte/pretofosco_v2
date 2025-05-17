@@ -1,4 +1,4 @@
-.login-section {
+.cadastro-section {
   padding: 5rem 0;
   min-height: 80vh;
   color: white;
@@ -9,7 +9,7 @@
   }
 }
 
-.login-card {
+.cadastro-card {
   background-color: rgba(0, 0, 0, 0.75);
   border: 1px solid #2d2d2d;
   border-radius: 1rem;
@@ -32,25 +32,27 @@
     color: black;
     font-weight: 600;
     border: none;
+    margin-bottom: 1rem;
 
     &:hover {
       background-color: #d7ff5e;
     }
   }
-}
 
-.auth-links {
-  color: white !important;
-  font-size: 0.9rem;
-
-  span {
-    cursor: pointer;
-    transition: color 0.2s ease;
+  .voltar-btn {
+    padding: 0.5rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    background-color: white;
+    color: black;
+    border: 2px solid white;
+    border-radius: 8px;
+    transition: 0.2s ease-in-out;
 
     &:hover {
-      color: #c7f907;
-      text-decoration: underline;
+      background-color: black;
+      color: white;
+      border-color: white;
     }
   }
 }
-

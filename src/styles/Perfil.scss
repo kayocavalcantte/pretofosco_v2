@@ -1,25 +1,35 @@
-.login-section {
+.perfil-section {
   padding: 5rem 0;
-  min-height: 80vh;
   color: white;
+  min-height: 80vh;
 
   h2 {
-    color: #c7f907;
+    font-size: 1.8rem;
     font-weight: bold;
+    color: #c7f907;
   }
 }
 
-.login-card {
+.perfil-card {
   background-color: rgba(0, 0, 0, 0.75);
   border: 1px solid #2d2d2d;
   border-radius: 1rem;
   padding: 2rem;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
 
+  label {
+    color: #ccc;
+  }
+
   .form-control {
     background-color: #1a1a1a;
     border: 1px solid #333;
     color: white;
+
+    &:disabled {
+      background-color: #2b2b2b;
+      opacity: 0.8;
+    }
 
     &:focus {
       border-color: #c7f907;
@@ -34,23 +44,7 @@
     border: none;
 
     &:hover {
-      background-color: #d7ff5e;
+      background-color: #c7f907;
     }
   }
 }
-
-.auth-links {
-  color: white !important;
-  font-size: 0.9rem;
-
-  span {
-    cursor: pointer;
-    transition: color 0.2s ease;
-
-    &:hover {
-      color: #c7f907;
-      text-decoration: underline;
-    }
-  }
-}
-

@@ -2,18 +2,18 @@
   padding: 1rem 0;
   border-bottom: 1px solid var(--pf-gray-dark);
   transition: all var(--transition-speed) ease;
-  
+
   &.scrolled {
     background-color: rgba(0, 0, 0, 0.9);
     padding: 0.75rem 0;
     backdrop-filter: blur(10px);
   }
-  
+
   .navbar-brand {
     font-size: 2rem;
     letter-spacing: 0.05em;
     transition: all var(--transition-speed) ease;
-    
+
     &:hover {
       color: var(--pf-neon-lime);
       text-shadow: 0 0 8px rgba(181, 255, 0, 0.5);
@@ -24,5 +24,127 @@
 .login-form {
   @media (max-width: 991.98px) {
     margin-top: 1rem;
+  }
+}
+.custom-navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 999;
+  background: transparent !important;
+  padding: 1rem 2rem;
+  backdrop-filter: none;
+  border: none !important;
+  box-shadow: none !important;
+}
+.header-link-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  text-transform: none;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 0.8;
+    color: #c7f907;
+
+  }
+}
+.profile-menu-container {
+  position: relative;
+
+}
+
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 120%;
+  background-color: #1f1f1f;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  min-width: 160px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  z-index: 999;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  button {
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    font-size: 0.9rem;
+    padding: 0.3rem 0;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #c7f907;
+    }
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #333;
+    margin: 0.3rem 0;
+  }
+}
+
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 120%;
+  background-color: #1f1f1f;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  min-width: 170px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  z-index: 999;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  button {
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    font-size: 0.9rem;
+    padding: 0.3rem 0;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    .icon {
+      font-size: 1rem;
+    }
+
+    &:hover {
+      color: #c7f907;
+    }
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #333;
+    margin: 0.3rem 0;
+  }
+}
+.home-icon {
+  color: white;
+  cursor: pointer;
+  transition: color 0.3s;
+
+  &:hover {
+    color: #c7f907;
   }
 }
