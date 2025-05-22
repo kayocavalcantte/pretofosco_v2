@@ -14,27 +14,51 @@ $color-neon: #c7f907;
 $color-text-light: #ccc;
 $color-text-dark: #111;
 $color-border-gray: #666;
+$color-border-darker: #282828;
 $color-bg-hover-subtle: rgba(199, 249, 7, 0.05);
 $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
+$color-page-bg: #0a0a0a;
+
 .site-footer {
-  border-top: 1px solid var(--pf-gray-dark);
-  padding: 0.5rem 0;
-  font-size: 0.875rem;
+  background-color: transparent;
+  border-top: 1px solid $color-border-darker;
+  padding: 2rem 1rem;
+  font-family: $base-font-family;
+  font-size: $base-font-size-sm;
+  color: $color-text-light;
   margin-top: auto;
+  text-align: center;
 
   .footer-col {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0 1rem;
   }
 
   .footer-link {
-    color: var(--pf-white);
+    font-family: $base-font-family;
+    color: $color-text-light;
     text-decoration: none;
-    transition: all var(--transition-speed) ease;
+    text-transform: $base-text-transform;
+    letter-spacing: $base-letter-spacing;
+    font-weight: $base-font-weight;
+    padding: 0.25rem 0.5rem;
+    border-radius: $base-border-radius;
+    transition: $base-transition;
 
-    &:hover {
-      color: var(--pf-neon-lime);
+    &:hover, &:focus {
+      color: $color-neon;
+      text-shadow: 0 0 6px rgba($color-neon, 0.6);
+      background-color: $color-bg-hover-subtle;
+    }
+  }
+
+  p {
+    margin-bottom: 0.5rem;
+    font-size: $base-font-size-sm;
+    &:last-child {
+      margin-bottom: 0;
     }
   }
 }

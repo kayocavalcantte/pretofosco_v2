@@ -13,66 +13,130 @@ $base-transition: all 0.25s ease;
 $color-neon: #c7f907;
 $color-text-light: #ccc;
 $color-text-dark: #111;
-$color-border-gray: #666;
+$color-border-gray: #666; 
+$color-border-darker: #282828;
 $color-bg-hover-subtle: rgba(199, 249, 7, 0.05);
 $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
+
 .esqueci-senha-section {
   padding: 5rem 0;
   min-height: 80vh;
-  color: white;
+  color: $color-text-light;
+  font-family: $base-font-family;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   h2 {
-    color: #c7f907;
-    font-weight: bold;
+    color: $color-neon;
+    font-family: $base-font-family;
+    font-weight: $base-font-weight-bold;
+    text-transform: $base-text-transform;
+    letter-spacing: $base-letter-spacing;
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 8px rgba($color-neon, 0.3);
   }
 }
 
 .esqueci-senha-card {
-  background-color: rgba(0, 0, 0, 0.75);
-  border: 1px solid #2d2d2d;
-  border-radius: 1rem;
-  padding: 2rem;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  background-color: lighten($color-text-dark, 5%);
+  border: 1px solid $color-border-darker;
+  border-radius: $base-border-radius;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba($color-neon, 0.1);
+  width: 100%;
+  max-width: 450px;
+
+  .form-label {
+    font-family: $base-font-family;
+    color: $color-text-light;
+    margin-bottom: 0.5rem;
+    font-size: $base-font-size-sm;
+  }
 
   .form-control {
-    background-color: #1a1a1a;
-    border: 1px solid #333;
-    color: white;
+    background-color: $color-text-dark;
+    border: 1px solid $color-border-gray;
+    color: $color-text-light;
+    font-family: $base-font-family;
+    border-radius: $base-border-radius;
+    padding: $base-padding-md;
+    font-size: $base-font-size-md;
+    transition: $base-transition;
+
+    &::placeholder {
+      color: darken($color-text-light, 30%);
+    }
 
     &:focus {
-      border-color: #c7f907;
-      box-shadow: 0 0 0 0.2rem rgba(199, 249, 7, 0.25);
+      background-color: $color-text-dark;
+      border-color: $color-neon;
+      box-shadow: 0 0 8px rgba($color-neon, 0.3);
+      color: $color-text-light;
     }
   }
 
   .neon-btn {
-    background-color: #c7f907;
-    color: black;
-    font-weight: 600;
-    border: none;
+    background-color: $color-neon;
+    color: $color-text-dark;
+    border: 1px solid $color-neon;
+    padding: $base-padding-md;
+    font-family: $base-font-family;
+    font-size: $base-font-size-md;
+    font-weight: $base-font-weight-bold;
+    text-transform: $base-text-transform;
+    letter-spacing: $base-letter-spacing;
+    border-radius: $base-border-radius;
+    cursor: pointer;
+    transition: $base-transition;
+    text-align: center;
+    display: block;
+    width: 100%;
+    margin-top: 1.5rem;
 
-    &:hover {
-      background-color: #d7ff5e;
+    &:hover, &:focus {
+      background-color: lighten($color-neon, 7%);
+      border-color: lighten($color-neon, 7%);
+      color: $color-text-dark;
+      box-shadow: 0 0 12px rgba($color-neon, 0.5);
+    }
+
+    &:active {
+      background-color: darken($color-neon, 5%);
+      border-color: darken($color-neon, 5%);
     }
   }
 }
-.voltar-btn {
-  margin-top: 1rem;
-  padding: 0.5rem 1.25rem;
-  font-weight: 600;
-  font-size: 0.9rem;
-  background-color: white;
-  color: black;
-  border: 2px solid white;
-  border-radius: 8px;
-  transition: 0.3s ease-in-out;
-  display: inline-block;
 
-  &:hover {
-    background-color: black;
-    color: white;
-    border-color: white;
+.voltar-btn {
+  background-color: transparent !important;
+  border: 1px solid $color-border-gray !important;
+  color: $color-text-light !important;
+  padding: $base-padding-sm;
+  font-size: $base-font-size-sm;
+  font-family: $base-font-family;
+  font-weight: $base-font-weight;
+  text-transform: $base-text-transform;
+  letter-spacing: $base-letter-spacing;
+  border-radius: $base-border-radius;
+  cursor: pointer;
+  transition: $base-transition;
+  text-align: center;
+  display: inline-block;
+  margin-top: 1.5rem;
+
+  &:hover, &:focus {
+    background-color: $color-bg-hover-subtle !important;
+    border-color: $color-neon !important;
+    color: $color-neon !important;
+    box-shadow: 0 0 8px $color-shadow-hover-subtle;
+  }
+
+  &:active {
+    background-color: rgba($color-neon, 0.1) !important;
+    color: lighten($color-neon, 5%) !important;
+    border-color: lighten($color-neon, 5%) !important;
   }
 }
-
-

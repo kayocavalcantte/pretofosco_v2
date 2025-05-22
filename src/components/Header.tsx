@@ -55,7 +55,7 @@ const Header: React.FC = () => {
                   Perfil
                 </button>
                 <hr />
-                <button onClick={() => alert('Deslogado!')}>
+                <button onClick={() => navigate('/')}>
                   <FaSignOutAlt className="icon" />
                   Logout
                 </button>

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Form, Card, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext.tsx';
 import '../styles/Login.scss';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth(); // Esta linha depende do AuthProvider acima na árvore de componentes
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
@@ -12,7 +14,13 @@ const Login: React.FC = () => {
     e.preventDefault();
 
     if (email && senha) {
-      navigate('/agendamentos');
+      // Lógica de login simulada para definir o papel
+      if (email === 'admin@pretofosco.com' && senha === 'admin123') {
+        login('admin', '/agenda'); // Define papel como 'admin' e navega para /agenda
+      } else {
+        // Para qualquer outro email/senha, considera como usuário normal
+        login('user', '/agendamentos'); // Define papel como 'user' e navega para /agendamentos
+      }
     } else {
       alert('Preencha todos os campos.');
     }

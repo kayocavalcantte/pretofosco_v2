@@ -16,71 +16,89 @@ $color-text-dark: #111;
 $color-border-gray: #666;
 $color-bg-hover-subtle: rgba(199, 249, 7, 0.05);
 $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
+
 .meus-agendamentos-section {
   padding: 5rem 0;
   min-height: 80vh;
   color: white;
 
   h2 {
-    color: #c7f907;
-    font-weight: bold;
+    color: $color-neon;
+    font-family: $base-font-family;
+    font-weight: $base-font-weight-bold;
     text-align: center;
-    margin-bottom: 2rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    margin-bottom: 2.5rem;
+    text-transform: $base-text-transform;
+    letter-spacing: $base-letter-spacing;
+    font-size: 2rem;
   }
 
   .agendamento-card {
     background-color: rgba(0, 0, 0, 0.85);
-    border: 1px solid #3a3a3a;
-    border-radius: 12px;
-    padding: 0.75rem 1rem;
-    box-shadow: 0 0 8px rgba(199, 249, 7, 0.1);
-    transition: transform 0.2s ease;
+    border: 1px solid $color-border-gray;
+    border-radius: $base-border-radius;
+    padding: $base-padding-md;
+    box-shadow: 0 0 8px rgba($color-neon, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 
     &:hover {
       transform: scale(1.01);
-      box-shadow: 0 0 10px rgba(199, 249, 7, 0.15);
+      box-shadow: 0 0 12px rgba($color-neon, 0.2);
     }
 
     h5 {
       color: #ffffff;
-      font-weight: 600;
-      font-size: 1.1rem;
+      font-family: $base-font-family;
+      font-weight: $base-font-weight-bold;
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.02em;
     }
 
     p {
-      color: #cccccc;
-      font-size: 0.9rem;
+      font-family: $base-font-family;
+      color: $color-text-light;
+      font-size: $base-font-size-sm;
       margin-bottom: 0.3rem;
     }
 
     .status-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-top: 4px;
+      font-family: $base-font-family;
+      font-size: 0.70rem;
+      font-weight: $base-font-weight-bold;
+      margin-top: 0.5rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: $base-border-radius;
+      display: inline-block;
+      letter-spacing: $base-letter-spacing;
+      text-transform: $base-text-transform;
 
       &.em-espera {
-        color: #f3f907;
+        color: #FFFFFF;
+        background-color: rgba(#f3f907, 0.1);
       }
 
       &.concluido {
-        color: #00ff88;
+        color: #FFFFFF;
+        background-color: rgba(#00ff88, 0.1);
       }
 
       &.cancelado {
-        color: #ff4b4b;
+        color: #FFFFFF;
+        background-color: rgba(#ff4b4b, 0.1);
       }
     }
 
     .icon-btn {
-      color: #c7f907;
-      font-size: 1.15rem;
+      color: $color-neon;
+      font-size: 1.2rem;
       cursor: pointer;
-      transition: color 0.2s ease;
+      transition: $base-transition;
 
       &:hover {
-        color: #e4ff88;
+        color: #FFFFFF;
+        text-shadow: 0 0 5px $color-neon;
+        transform: scale(1.1);
       }
 
       &.trash {
@@ -88,27 +106,11 @@ $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
 
         &:hover {
           color: #ff1f1f;
+          text-shadow: 0 0 5px rgba(#ff5555, 0.7);
         }
       }
     }
   }
 
-  .tooltip.show {
-    .tooltip-inner {
-      background-color: #000 !important;
-      color: #fff !important;
-      font-size: 0.85rem;
-      padding: 0.5rem 0.75rem;
-      border-radius: 6px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-    }
 
-    &.bs-tooltip-top .tooltip-arrow::before,
-    &.bs-tooltip-bottom .tooltip-arrow::before,
-    &.bs-tooltip-start .tooltip-arrow::before,
-    &.bs-tooltip-end .tooltip-arrow::before {
-      border-color: #000 !important;
-    }
-  }
 }
-

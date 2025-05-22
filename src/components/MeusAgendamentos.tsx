@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Container, Row, Col, Card } from 'react-bootstrap'; // OverlayTrigger e Tooltip removidos daqui
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import '../styles/MeusAgendamentos.scss';
 
@@ -53,23 +53,29 @@ const MeusAgendamentos: React.FC = () => {
                       </p>
                     </div>
                     <div className="d-flex gap-3">
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={<Tooltip id={`tooltip-edit-${ag.id}`}>Editar</Tooltip>}
+                      {/* Botão Editar sem Tooltip */}
+                      <span
+                        className="icon-btn"
+                        onClick={() => editarAgendamento(ag.id)}
+                        aria-label="Editar agendamento" // Adicionado aria-label
+                        role="button" // Adicionado role para semântica
+                        tabIndex={0} // Adicionado para ser focável via teclado
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') editarAgendamento(ag.id);}} // Para acessibilidade via teclado
                       >
-                        <span className="icon-btn" onClick={() => editarAgendamento(ag.id)}>
-                          <FaEdit />
-                        </span>
-                      </OverlayTrigger>
+                        <FaEdit />
+                      </span>
 
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={<Tooltip id={`tooltip-cancel-${ag.id}`}>Cancelar</Tooltip>}
+                      {/* Botão Cancelar sem Tooltip */}
+                      <span
+                        className="icon-btn trash"
+                        onClick={() => cancelarAgendamento(ag.id)}
+                        aria-label="Cancelar agendamento" // Adicionado aria-label
+                        role="button" // Adicionado role para semântica
+                        tabIndex={0} // Adicionado para ser focável via teclado
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') cancelarAgendamento(ag.id);}} // Para acessibilidade via teclado
                       >
-                        <span className="icon-btn trash" onClick={() => cancelarAgendamento(ag.id)}>
-                          <FaTrash />
-                        </span>
-                      </OverlayTrigger>
+                        <FaTrash />
+                      </span>
                     </div>
                   </Card.Body>
                 </Card>

@@ -14,7 +14,6 @@ export default function Agenda() {
   return (
     <div className="agenda-container">
       <div className="agenda-header">
-        <h2 className="titulo-agenda">Agenda</h2>
 
         <div className="seletor-data">
           <button
