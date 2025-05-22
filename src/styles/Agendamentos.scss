@@ -35,34 +35,110 @@ $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
 }
 
 .appointment-card {
-  background-color: rgba(0, 0, 0, 0.75);
-  border: 1px solid var(--pf-gray-dark);
-  border-radius: 1rem;
-  overflow: hidden;
-  position: relative;
 
-  .card-body {
-    padding: 2rem;
-  }
 
   .rdp {
     --rdp-cell-size: 40px;
-    --rdp-accent-color: var(--pf-neon-lime);
-    --rdp-background-color: transparent;
+    --rdp-accent-color: #{$color-neon};
+    --rdp-background-color: #{$color-neon};
+    --rdp-selected-color: #{$color-text-dark};
+
+
+    margin: 1em auto;
+    font-family: $base-font-family;
+    color: $color-text-light;
+
+
+    .rdp-caption_label {
+      font-size: $base-font-size-md;
+      font-weight: $base-font-weight-bold;
+      text-transform: capitalize;
+      letter-spacing: $base-letter-spacing;
+    }
+
+    .rdp-nav_button {
+      color: $color-text-light;
+      border-radius: $base-border-radius;
+      padding: 0.3rem 0.5rem;
+      transition: $base-transition;
+      background-color: transparent;
+      border: 1px solid transparent;
+      outline: none;
+
+      svg {
+        width: 0.8em;
+      }
+
+      &:hover {
+        color: $color-neon;
+        background-color: $color-bg-hover-subtle;
+        border-color: rgba($color-neon, 0.3);
+      }
+
+
+      &:focus-visible {
+        color: $color-neon;
+        border-color: $color-neon;
+        background-color: $color-bg-hover-subtle;
+        box-shadow: 0 0 8px rgba($color-neon, 0.4);
+      }
+
+      &:active {
+        background-color: rgba($color-neon, 0.1);
+      }
+    }
 
     .rdp-head_cell {
-      font-weight: 500;
-      text-transform: uppercase;
+      font-weight: $base-font-weight;
+      text-transform: $base-text-transform;
       font-size: 0.75rem;
-      letter-spacing: 0.05em;
+      letter-spacing: $base-letter-spacing;
+      color: $color-text-light;
+      padding-bottom: 0.5rem;
     }
 
     .rdp-day {
-      font-weight: 500;
+      font-weight: $base-font-weight;
+      border-radius: $base-border-radius;
+      transition: $base-transition;
+
+      &:hover:not(.rdp-day_disabled):not(.rdp-day_selected) {
+        background-color: $color-bg-hover-subtle;
+        color: $color-neon;
+      }
+    }
+
+    .rdp-day_today:not(.rdp-day_selected) {
+      color: $color-neon;
+      background-color: $color-text-dark;
+      font-weight: $base-font-weight-bold;
+      border-radius: $base-border-radius;
+      border: 1px solid $color-text-dark;
+    }
+
+    .rdp-day_today.rdp-day_selected {
+      border-color: transparent;
+    }
+
+    .rdp-day_selected,
+    .rdp-day_selected:focus-visible,
+    .rdp-day_selected:hover {
+      border-radius: $base-border-radius;
+      font-weight: $base-font-weight-bold;
+      background-color: var(--rdp-background-color);
+      color: var(--rdp-selected-color);
+    }
+
+    .rdp-day_outside {
+      opacity: 0.3;
+    }
+
+    .rdp-day_disabled {
+      opacity: 0.2;
+      cursor: default;
     }
   }
 }
-
 .time-slots {
   display: flex;
   flex-wrap: wrap;
@@ -74,7 +150,7 @@ $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
 .service-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
   margin-top: 10px;
 }
@@ -114,12 +190,13 @@ $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
   background-color: transparent;
   border: 1px solid $color-border-gray;
   color: $color-text-light;
-  padding: $base-padding-md;
-  font-size: $base-font-size-md;
+  // Diminuindo o padding e a fonte
+  padding: 0.5rem 1rem;               // Anteriormente: $base-padding-md (0.6rem 1.2rem)
+  font-size: $base-font-size-sm;      // Anteriormente: $base-font-size-md (0.95rem), agora 0.875rem
   font-family: $base-font-family;
   font-weight: $base-font-weight;
   text-transform: $base-text-transform;
-  letter-spacing: $base-letter-spacing;
+  letter-spacing: 0.04em;             // Anteriormente: $base-letter-spacing (0.05em)
   border-radius: $base-border-radius;
   cursor: pointer;
   transition: $base-transition;
@@ -130,6 +207,14 @@ $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
     color: $color-neon;
     background-color: $color-bg-hover-subtle;
     box-shadow: 0 0 8px $color-shadow-hover-subtle;
+  }
+
+  &.selected {
+    background-color: $color-neon !important;
+    color: $color-text-dark !important;
+    border-color: $color-neon !important;
+    font-weight: $base-font-weight-bold;
+    box-shadow: 0 0 10px rgba($color-neon, 0.4);
   }
 
   &.selected {
@@ -154,7 +239,7 @@ $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
   border-radius: $base-border-radius;
   cursor: pointer;
   transition: $base-transition;
-  text-align: center; 
+  text-align: center;
   display: inline-block;
   width: auto;
   margin-top: 1.5rem;
