@@ -16,25 +16,3 @@ $color-text-dark: #111;
 $color-border-gray: #666;
 $color-bg-hover-subtle: rgba(199, 249, 7, 0.05);
 $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
-.site-footer {
-  border-top: 1px solid var(--pf-gray-dark);
-  padding: 0.5rem 0;
-  font-size: 0.875rem;
-  margin-top: auto;
-
-  .footer-col {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .footer-link {
-    color: var(--pf-white);
-    text-decoration: none;
-    transition: all var(--transition-speed) ease;
-
-    &:hover {
-      color: var(--pf-neon-lime);
-    }
-  }
-}

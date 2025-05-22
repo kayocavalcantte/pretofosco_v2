@@ -1,3 +1,21 @@
+$base-font-family: 'Inter', sans-serif;
+$base-font-size-sm: 0.875rem;
+$base-font-size-md: 0.95rem;
+$base-font-weight: 500;
+$base-font-weight-bold: 700;
+$base-text-transform: uppercase;
+$base-letter-spacing: 0.05em;
+$base-border-radius: 2px;
+$base-padding-sm: 0.3rem 0.8rem;
+$base-padding-md: 0.6rem 1.2rem;
+$base-transition: all 0.25s ease;
+
+$color-neon: #c7f907;
+$color-text-light: #ccc;
+$color-text-dark: #111;
+$color-border-gray: #666;
+$color-bg-hover-subtle: rgba(199, 249, 7, 0.05);
+$color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
 .hero-section {
   min-height: 80vh;
   display: flex;
@@ -53,21 +71,6 @@
   margin-top: 10px;
 }
 
-.time-slot {
-  padding: 0.5rem 1rem;
-  border: 2px solid #c7f907;
-  background: transparent;
-  color: #c7f907;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-
-  &.selected {
-    background-color: #c7f907;
-    color: black;
-  }
-}
-
 .service-options {
   display: flex;
   flex-wrap: wrap;
@@ -76,55 +79,121 @@
   margin-top: 10px;
 }
 
-.service-btn {
-  padding: 0.5rem 1rem;
-  border: 2px solid #c7f907;
-  background: transparent;
-  color: #c7f907;
-  border-radius: 8px;
+.novo-agendamento-btn {
+  background-color: transparent;
+  border: 1px solid $color-border-gray;
+  color: $color-text-light;
+  padding: $base-padding-sm;
+  font-size: $base-font-size-sm;
+  font-family: $base-font-family;
+  font-weight: $base-font-weight;
+  text-transform: $base-text-transform;
+  letter-spacing: $base-letter-spacing;
+  border-radius: $base-border-radius;
   cursor: pointer;
-  font-weight: 600;
+  transition: $base-transition;
+  text-align: center;
+  display: inline-block;
+
+  &:hover, &:focus {
+    border-color: $color-neon;
+    color: $color-neon;
+    background-color: $color-bg-hover-subtle;
+    box-shadow: 0 0 8px $color-shadow-hover-subtle;
+  }
+
+  &:active {
+    background-color: rgba($color-neon, 0.1);
+    color: lighten($color-neon, 5%);
+    border-color: lighten($color-neon, 5%);
+  }
+}
+
+.time-slot,
+.service-btn {
+  background-color: transparent;
+  border: 1px solid $color-border-gray;
+  color: $color-text-light;
+  padding: $base-padding-md;
+  font-size: $base-font-size-md;
+  font-family: $base-font-family;
+  font-weight: $base-font-weight;
+  text-transform: $base-text-transform;
+  letter-spacing: $base-letter-spacing;
+  border-radius: $base-border-radius;
+  cursor: pointer;
+  transition: $base-transition;
+  text-align: center;
+
+  &:hover, &:focus {
+    border-color: $color-neon;
+    color: $color-neon;
+    background-color: $color-bg-hover-subtle;
+    box-shadow: 0 0 8px $color-shadow-hover-subtle;
+  }
 
   &.selected {
-    background-color: #c7f907;
-    color: black;
+    background-color: $color-neon !important;
+    color: $color-text-dark !important;
+    border-color: $color-neon !important;
+    font-weight: $base-font-weight-bold;
+    box-shadow: 0 0 10px rgba($color-neon, 0.4);
   }
 }
 
 .confirm-btn {
-  margin-top: 1rem;
-  padding: 0.75rem 2rem;
-  font-weight: 700;
-  background-color: #c7f907;
-  color: black;
-  border: none;
-  border-radius: 8px;
-  transition: 0.2s;
-  text-transform: uppercase;
+  background-color: $color-neon;
+  color: $color-text-dark;
+  border: 1px solid $color-neon;
+  padding: $base-padding-md;
+  font-size: $base-font-size-md;
+  font-family: $base-font-family;
+  font-weight: $base-font-weight-bold;
+  text-transform: $base-text-transform;
+  letter-spacing: $base-letter-spacing;
+  border-radius: $base-border-radius;
+  cursor: pointer;
+  transition: $base-transition;
+  text-align: center; 
+  display: inline-block;
+  width: auto;
+  margin-top: 1.5rem;
 
-  &:hover {
-    background-color: #d7ff5e;
+  &:hover, &:focus {
+    background-color: lighten($color-neon, 7%);
+    border-color: lighten($color-neon, 7%);
+    box-shadow: 0 0 12px rgba($color-neon, 0.5);
+  }
+
+  &:active {
+    background-color: darken($color-neon, 5%);
   }
 }
+
 .whatsapp-btn {
+  $whatsapp-green: #25d366;
+  $whatsapp-green-hover: #1ebe5b;
+
+  background-color: $whatsapp-green;
+  color: white;
+  border: 1px solid $whatsapp-green;
+  padding: $base-padding-md;
+  font-size: $base-font-size-md;
+  font-family: $base-font-family;
+  font-weight: $base-font-weight-bold;
+  text-transform: $base-text-transform;
+  letter-spacing: $base-letter-spacing;
+  border-radius: $base-border-radius;
+  cursor: pointer;
+  transition: $base-transition;
+  text-decoration: none;
+  text-align: center;
   display: inline-block;
   margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
-  background-color: #25d366;
-  color: white;
-  font-weight: bold;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 1rem;
-  transition: background-color 0.2s ease;
 
-  &:hover {
-    background-color: #1ebe5b;
+  &:hover, &:focus {
+    background-color: $whatsapp-green-hover;
+    border-color: $whatsapp-green-hover;
     color: white;
   }
-}
-.time-slot.selected {
-  background-color: #c7f907;
-  color: black;
-  font-weight: bold;
 }

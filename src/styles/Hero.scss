@@ -1,3 +1,21 @@
+$base-font-family: 'Inter', sans-serif;
+$base-font-size-sm: 0.875rem;
+$base-font-size-md: 0.95rem;
+$base-font-weight: 500;
+$base-font-weight-bold: 700;
+$base-text-transform: uppercase;
+$base-letter-spacing: 0.05em;
+$base-border-radius: 2px;
+$base-padding-sm: 0.3rem 0.8rem;
+$base-padding-md: 0.6rem 1.2rem;
+$base-transition: all 0.25s ease;
+
+$color-neon: #c7f907;
+$color-text-light: #ccc;
+$color-text-dark: #111;
+$color-border-gray: #666;
+$color-bg-hover-subtle: rgba(199, 249, 7, 0.05);
+$color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
 .custom-navbar {
   position: fixed;
   top: 0;
@@ -16,5 +34,42 @@
 
   &:hover {
     color: #e4ffa1;
+  }
+}
+.agendar-btn {
+  background-color: #000 !important;       // Fundo preto sólido
+  border: 2px solid #505050 !important;  // Borda cinza escura, como um monitor antigo
+  color: #f0f0f0 !important;               // Texto base claro
+  padding: 14px 30px;                       // Padding um pouco maior
+  font-family: 'Press Start 2P', 'Courier New', monospace; // Fonte pixelada ou monoespaçada
+                                          // Se 'Press Start 2P' não estiver disponível, use uma monoespaçada.
+                                          // Ou mantenha 'Inter' para legibilidade e aplique outros efeitos.
+  font-size: 0.9rem; // Fontes pixeladas geralmente ficam melhor menores
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 0; // Sem cantos arredondados
+  transition: all 0.25s ease;
+  position: relative;
+
+  // Simula um leve brilho de tubo de neon ao redor do texto
+  text-shadow: 0 0 3px rgba(224, 224, 224, 0.4);
+
+  &:hover, &:focus {
+    border-color: #c7f907 !important;
+    color: #c7f907 !important;
+    background-color: #050505 !important; // Leve clareamento do fundo
+    // Efeito de brilho neon intenso no texto
+    text-shadow: 0 0 5px #c7f907,
+                 0 0 10px #c7f907,
+                 0 0 15px rgba(199, 249, 7, 0.8),
+                 0 0 20px rgba(199, 249, 7, 0.6);
+    box-shadow: 0 0 10px rgba(199, 249, 7, 0.3); // Brilho na borda do botão
+  }
+
+  &:active {
+    color: lighten(#c7f907, 15%) !important;
+    text-shadow: 0 0 3px lighten(#c7f907, 15%),
+                 0 0 8px lighten(#c7f907, 15%);
+    box-shadow: none;
   }
 }

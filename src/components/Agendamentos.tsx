@@ -153,7 +153,7 @@ const Agendamentos: React.FC = () => {
                     >
                       Enviar mensagem no WhatsApp
                     </a>
-                    <button onClick={handleReset} className="mt-3 btn btn-sm btn-outline-light">
+                    <button onClick={handleReset} className="mt-3 novo-agendamento-btn">
                       Novo agendamento
                     </button>
                   </div>
