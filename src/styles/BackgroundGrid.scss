@@ -3,32 +3,33 @@
   inset: 0;
   z-index: -1;
   display: grid;
+  // Colunas padrão para telas maiores (desktop)
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: 12px;
-  padding: 0;
+  padding: 0; // Removido padding desnecessário que estava no seu exemplo original
   pointer-events: none;
   overflow: hidden;
 
   .bg-image-container {
     position: relative;
     width: 100%;
-    height: 100%; // Preenche 100% da célula
+    height: 100%; // Preenche 100% da célula do grid
     overflow: hidden;
     border-radius: 12px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-    aspect-ratio: auto; // REMOVE o aspecto quadrado forçado
+    // aspect-ratio: auto; // Pode ser removido se height: 100% e width: 100% na imagem já dão o efeito desejado
   }
 
   .bg-image {
     width: 100%;
     height: 100%;
-    object-fit: contain;    // OU experimente `contain` se preferir não cortar
+    object-fit: contain; // 'contain' é bom para não cortar, 'cover' preencheria mais
     object-position: center;
     transition: transform 0.5s ease, opacity 0.5s ease;
     transform: scale(1.02);
     opacity: 0.8;
     filter: brightness(1) contrast(1.2) saturate(1.3);
-    mix-blend-mode: normal;
+    mix-blend-mode: normal; // 'normal' é o padrão, pode ser omitido
   }
 
   &::after {
@@ -36,7 +37,7 @@
     position: absolute;
     inset: 0;
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), #000);
-    z-index: 1;
+    z-index: 1; // Garante que o gradiente fique sobre as imagens, mas abaixo do conteúdo principal
     pointer-events: none;
   }
 
@@ -57,5 +58,37 @@
       opacity: 0.8;
       transform: scale(1.02);
     }
+  }
+
+  // --- Media Queries para Responsividade ---
+
+  // Para tablets e celulares maiores em paisagem (ex: > 768px)
+  // (Ajuste o breakpoint conforme necessário)
+  // Se o seu `minmax(400px, 1fr)` já cobre bem tablets, você pode pular este
+  // ou ajustar para algo como minmax(300px, 1fr) se quiser mais colunas em tablets.
+
+  // Para celulares em modo retrato (ex: <= 768px)
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); // Ex: colunas de no mínimo 250px
+    gap: 8px; // Gap menor para telas menores
+  }
+
+  // Para celulares bem pequenos (ex: <= 480px)
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); // Ex: colunas de no mínimo 150px
+    // Ou, se preferir uma única coluna bem pequena:
+    // grid-template-columns: 1fr;
+    gap: 6px;
+
+    .bg-image-container {
+      border-radius: 8px; // Raio da borda menor
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); // Sombra mais sutil
+    }
+  }
+
+  // Exemplo de uma única coluna para telas muito pequenas, se desejado
+  @media (max-width: 360px) {
+    grid-template-columns: 1fr; // Uma única coluna
+    gap: 4px;
   }
 }
