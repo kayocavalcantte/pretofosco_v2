@@ -1,28 +1,43 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Card, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext.tsx';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/Login.scss';
+import api from '../services/axios';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // Esta linha depende do AuthProvider acima na árvore de componentes
+  const { setIsLoggedIn, setRole } = useAuth(); // pegando funções do contexto
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault(); // evita reload da página
 
-    if (email && senha) {
-      // Lógica de login simulada para definir o papel
-      if (email === 'admin@pretofosco.com' && senha === 'admin123') {
-        login('admin', '/agenda'); // Define papel como 'admin' e navega para /agenda
+    try {
+      const response = await api.post('/auth/login', { email, senha });
+      const token = response.data.token;
+
+      localStorage.setItem('token', token);
+
+      // Decodifica o token para extrair o perfil
+      const payloadBase64 = token.split('.')[1];
+      const decodedPayload = JSON.parse(atob(payloadBase64));
+      const perfil = decodedPayload.perfil.toLowerCase(); // exemplo: "ADMIN" → "admin"
+
+      // Atualiza contexto global
+      setIsLoggedIn(true);
+      setRole(perfil);
+
+      // Redireciona com base no papel
+      if (perfil === 'admin') {
+        navigate('/agenda');
       } else {
-        // Para qualquer outro email/senha, considera como usuário normal
-        login('user', '/agendamentos'); // Define papel como 'user' e navega para /agendamentos
+        navigate('/agendamentos');
       }
-    } else {
-      alert('Preencha todos os campos.');
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+      alert('Email ou senha inválidos.');
     }
   };
 

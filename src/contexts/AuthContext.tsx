@@ -6,38 +6,35 @@ type UserRole = 'admin' | 'user' | null;
 
 interface AuthContextType {
   role: UserRole;
-  login: (role: 'admin' | 'user', navigateTo?: string) => void;
-  logout: (navigateTo?: string) => void;
   isLoggedIn: boolean;
+  setRole: (role: UserRole) => void;
+  setIsLoggedIn: (loggedIn: boolean) => void;
+  logout: (navigateTo?: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [role, setRole] = useState<UserRole>(() => {
-    // Tenta pegar o papel do localStorage para persistência simples na sessão
     return localStorage.getItem('userRole') as UserRole | null;
   });
-  const navigate = useNavigate(); // Mova useNavigate para dentro do escopo do Provider se precisar aqui
 
-  const login = (newRole: 'admin' | 'user', navigateTo?: string) => {
-    localStorage.setItem('userRole', newRole);
-    setRole(newRole);
-    if (navigateTo) {
-      navigate(navigateTo);
-    }
-  };
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+    return !!localStorage.getItem('token');
+  });
+
+  const navigate = useNavigate();
 
   const logout = (navigateTo: string = '/login') => {
+    localStorage.removeItem('token');
     localStorage.removeItem('userRole');
     setRole(null);
+    setIsLoggedIn(false);
     navigate(navigateTo);
   };
 
-  const isLoggedIn = role !== null;
-
   return (
-    <AuthContext.Provider value={{ role, login, logout, isLoggedIn }}>
+    <AuthContext.Provider value={{ role, isLoggedIn, setRole, setIsLoggedIn, logout }}>
       {children}
     </AuthContext.Provider>
   );
