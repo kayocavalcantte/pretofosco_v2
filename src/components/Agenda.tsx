@@ -1,58 +1,64 @@
 import React, { useState } from 'react';
-import { format } from "date-fns";
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
-import '../styles/Agenda.scss'; // ajuste conforme necessário
+import { Container, Form, Button } from 'react-bootstrap';
+import SelecionarServicos from '../components/SelecionarServicos';
+import SelecionarHorarioDisponivel from '../components/SelecionarHorarioDisponivel';
+import api from '../services/axios';
+import { useNavigate } from 'react-router-dom';
 
-const horarios = Array.from({ length: 12 }, (_, i) => `${i + 8}:00`);
-const barbeiros = ['Preto Fosco'];
+const FUNCIONARIO_FIXO_ID = 1; // ⚠️ Substitua se necessário
 
-export default function Agenda() {
-  const [dataSelecionada, setDataSelecionada] = useState<Date | undefined>(new Date());
-  const [mostrarCalendario, setMostrarCalendario] = useState(false);
+const Agendar: React.FC = () => {
+  const [data, setData] = useState('');
+  const [hora, setHora] = useState('');
+  const [servicosSelecionados, setServicosSelecionados] = useState<number[]>([]);
+  const navigate = useNavigate();
+
+  const handleAgendar = async () => {
+    try {
+      const agendamentoRes = await api.post('/agendamento', {
+        funcionarioId: FUNCIONARIO_FIXO_ID,
+        dataAgendamento: data,
+        horario: hora
+      });
+
+      const agendamentoId = agendamentoRes.data.id;
+
+      await api.post('/agendamento-servico', {
+        agendamentoId,
+        servicoIds: servicosSelecionados
+      });
+
+      alert('Agendamento realizado com sucesso!');
+      navigate('/meus-agendamentos');
+    } catch (err) {
+      console.error('Erro ao agendar:', err);
+      alert('Erro ao agendar. Tente novamente.');
+    }
+  };
 
   return (
-    <div className="agenda-container">
-      <div className="agenda-header">
+    <Container>
+      <h2 className="my-4 text-center">Agendar Horário</h2>
+      <Form>
+        <Form.Group className="my-3">
+          <Form.Label>Data</Form.Label>
+          <Form.Control type="date" value={data} onChange={(e) => setData(e.target.value)} />
+        </Form.Group>
 
-        <div className="seletor-data">
-          <button
-            className="botao-data"
-            onClick={() => setMostrarCalendario(!mostrarCalendario)}
-          >
-            {dataSelecionada ? format(dataSelecionada, 'dd/MM/yyyy') : "Escolher data"}
-          </button>
+        <SelecionarHorarioDisponivel
+          funcionarioId={FUNCIONARIO_FIXO_ID}
+          data={data}
+          onSelecionar={setHora}
+        />
 
-          {mostrarCalendario && (
-            <div className="calendario-container">
-              <DayPicker
-                mode="single"
-                selected={dataSelecionada}
-                onSelect={(date) => {
-                  setDataSelecionada(date);
-                  setMostrarCalendario(false);
-                }}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+        <SelecionarServicos onSelecionar={setServicosSelecionados} />
 
-      <div className="agenda-grid" style={{ gridTemplateColumns: `100px repeat(${barbeiros.length}, 1fr)` }}>
-        <div></div>
-        {barbeiros.map((barbeiro) => (
-          <div key={barbeiro} className="barbeiro-header">{barbeiro}</div>
-        ))}
-
-        {horarios.map((hora) => (
-          <React.Fragment key={hora}>
-            <div className="hora-label">{hora}</div>
-            {barbeiros.map((barbeiro) => (
-              <div key={`${hora}-${barbeiro}`} className="celula-agenda"></div>
-            ))}
-          </React.Fragment>
-        ))}
-      </div>
-    </div>
+        <Button className="mt-4 w-100" onClick={handleAgendar} disabled={!data || !hora || servicosSelecionados.length === 0}>
+          Confirmar Agendamento
+        </Button>
+      </Form>
+    </Container>
   );
-}
+};
+
+export default Agendar;

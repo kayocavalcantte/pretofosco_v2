@@ -5,44 +5,55 @@ import 'react-day-picker/dist/style.css';
 import '../styles/Agendamentos.scss';
 import { ptBR } from 'date-fns/locale';
 import { format } from 'date-fns';
+import api from '../services/axios'; // ⬅ importa a API com token
 
 const Agendamentos: React.FC = () => {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const [whatsReady, setWhatsReady] = useState<boolean>(false);
+  const [agendamentoRealizado, setAgendamentoRealizado] = useState(false);
 
   const timeSlots = ['10:00', '11:30', '14:00', '16:30', '18:00'];
   const services = ['Corte de cabelo', 'Pintura', 'Sobrancelha'];
-
-  const phoneNumber = '5585988278193'; // <-- Coloque aqui o número do WhatsApp com DDI e DDD
+  const funcionarioId = 1;
 
   const handleDateSelect = (day: Date | undefined) => {
     setSelectedDay(day);
     setSelectedTime(null);
     setSelectedServices([]);
     setStep(day ? 2 : 1);
-    setWhatsReady(false);
+    setAgendamentoRealizado(false);
   };
 
   const handleTimeSelect = (time: string) => {
     setSelectedTime(time);
     setStep(3);
-    setWhatsReady(false);
+    setAgendamentoRealizado(false);
   };
 
   const toggleService = (service: string) => {
     setSelectedServices(prev =>
-      prev.includes(service)
-        ? prev.filter(s => s !== service)
-        : [...prev, service]
+      prev.includes(service) ? prev.filter(s => s !== service) : [...prev, service]
     );
   };
 
-  const handleConfirm = () => {
-    alert('Agendamento confirmado!');
-    setWhatsReady(true);
+  const handleConfirm = async () => {
+    if (!selectedDay || !selectedTime) return;
+
+    try {
+      const dto = {
+        funcionarioId,
+        horario: selectedTime,
+        dataAgendamento: format(selectedDay, 'yyyy-MM-dd'),
+      };
+
+      await api.post('/agendamento/register', dto);
+      setAgendamentoRealizado(true);
+    } catch (error) {
+      console.error('Erro ao agendar:', error);
+      alert('Erro ao realizar agendamento. Verifique se o horário já está ocupado.');
+    }
   };
 
   const handleReset = () => {
@@ -50,16 +61,7 @@ const Agendamentos: React.FC = () => {
     setSelectedTime(null);
     setSelectedServices([]);
     setStep(1);
-    setWhatsReady(false);
-  };
-
-  const buildWhatsAppMessage = () => {
-    if (!selectedDay || !selectedTime || selectedServices.length === 0) return '';
-    const dateFormatted = format(selectedDay, 'dd/MM/yyyy');
-    const servicesText = selectedServices.join(', ');
-    return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
-      `Oi! Marquei um serviço na barbearia:\n\n• Serviços: ${servicesText}\n• Data: ${dateFormatted}\n• Horário: ${selectedTime}`
-    )}`;
+    setAgendamentoRealizado(false);
   };
 
   return (
@@ -67,15 +69,7 @@ const Agendamentos: React.FC = () => {
       <Container>
         <Row className="justify-content-center text-center mb-5">
           <Col xs={12} md={10} lg={8}>
-            <h1
-              style={{
-                fontFamily: "'PlanetKosmos', 'Inter', sans-serif",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase"
-              }}
-            >
-              Preto Fosco
-            </h1>
+            <h1 className="brand-title">Preto Fosco</h1>
             <p className="micro-text">Corte, Cor e Tranças</p>
           </Col>
         </Row>
@@ -83,8 +77,8 @@ const Agendamentos: React.FC = () => {
         <Row className="justify-content-center">
           <Col xs={12} sm={10} md={8} lg={6} xl={5}>
             <Card className="appointment-card">
-              <Card.Body className="d-flex flex-column align-items-center text-center">
-                <h3 className="micro-text text-center mb-4">Agende seu horário</h3>
+              <Card.Body className="text-center">
+                <h3 className="micro-text mb-4">Agende seu horário</h3>
 
                 <DayPicker
                   mode="single"
@@ -96,32 +90,31 @@ const Agendamentos: React.FC = () => {
                   className="mx-auto"
                 />
 
-                  {selectedDay && !whatsReady && (
-                    <div className="mt-4 text-center fade-in">
-                      <p className="micro-text">Horários disponíveis</p>
-                      <div className="time-slots">
-                        {timeSlots.map((time, index) => (
-                          <button
-                            key={index}
-                            className={`time-slot ${selectedTime === time ? 'selected' : ''}`}
-                            onClick={() => handleTimeSelect(time)}
-                          >
-                            {time}
-                          </button>
-                        ))}
-                      </div>
-
-                      {selectedTime && step >= 2 && (
-                        <p className="mt-3 text-white">
-                          Horário selecionado: <strong>{selectedTime}</strong>
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-
-                {step === 3 && selectedDay && selectedTime && !whatsReady && (
+                {selectedDay && !agendamentoRealizado && (
                   <div className="mt-4 text-center fade-in">
+                    <p className="micro-text">Horários disponíveis</p>
+                    <div className="time-slots">
+                      {timeSlots.map((time, index) => (
+                        <button
+                          key={index}
+                          className={`time-slot ${selectedTime === time ? 'selected' : ''}`}
+                          onClick={() => handleTimeSelect(time)}
+                        >
+                          {time}
+                        </button>
+                      ))}
+                    </div>
+
+                    {selectedTime && step >= 2 && (
+                      <p className="mt-3 text-white">
+                        Horário selecionado: <strong>{selectedTime}</strong>
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {step === 3 && selectedDay && selectedTime && !agendamentoRealizado && (
+                  <div className="mt-4 fade-in">
                     <p className="micro-text">Escolha os serviços desejados</p>
                     <div className="service-options">
                       {services.map(service => (
@@ -135,24 +128,15 @@ const Agendamentos: React.FC = () => {
                       ))}
                     </div>
 
-                    {selectedServices.length > 0 && (
-                      <button className="confirm-btn mt-3" onClick={handleConfirm}>
-                        Confirmar Agendamento
-                      </button>
-                    )}
+                    <button className="confirm-btn mt-3" onClick={handleConfirm}>
+                      Confirmar Agendamento
+                    </button>
                   </div>
                 )}
 
-                {whatsReady && (
+                {agendamentoRealizado && (
                   <div className="mt-4 text-center fade-in">
-                    <a
-                      href={buildWhatsAppMessage()}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="whatsapp-btn"
-                    >
-                      Enviar mensagem no WhatsApp
-                    </a>
+                    <p className="text-success">✅ Agendamento realizado com sucesso!</p>
                     <button onClick={handleReset} className="mt-3 novo-agendamento-btn">
                       Novo agendamento
                     </button>
