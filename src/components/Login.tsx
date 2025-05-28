@@ -12,24 +12,28 @@ const Login: React.FC = () => {
   const [senha, setSenha] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); // evita reload da página
+    e.preventDefault();
 
     try {
       const response = await api.post('/auth/login', { email, senha });
       const token = response.data.token;
 
+      // Salva o token no localStorage
       localStorage.setItem('token', token);
 
       // Decodifica o token para extrair o perfil
       const payloadBase64 = token.split('.')[1];
       const decodedPayload = JSON.parse(atob(payloadBase64));
-      const perfil = decodedPayload.perfil.toLowerCase(); // exemplo: "ADMIN" → "admin"
+      const perfil = decodedPayload.perfil.toLowerCase(); // "ADMIN" → "admin"
 
-      // Atualiza contexto global
+      // Salva o perfil no localStorage para o contexto carregar depois
+      localStorage.setItem('userRole', perfil);
+
+      // Atualiza o contexto global
       setIsLoggedIn(true);
       setRole(perfil);
 
-      // Redireciona com base no papel
+      // Redireciona conforme o papel
       if (perfil === 'admin') {
         navigate('/agenda');
       } else {
@@ -40,6 +44,7 @@ const Login: React.FC = () => {
       alert('Email ou senha inválidos.');
     }
   };
+
 
   return (
     <section className="login-section">

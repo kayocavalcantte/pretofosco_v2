@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Spinner } from 'react-bootstrap';
 import api from '../services/axios';
 
 interface Props {
@@ -8,38 +8,35 @@ interface Props {
   onSelecionar: (hora: string) => void;
 }
 
-const horariosPadrao = ['10:00', '11:30', '14:00', '16:30', '18:00'];
-
 const SelecionarHorarioDisponivel: React.FC<Props> = ({ funcionarioId, data, onSelecionar }) => {
-  const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
+  const [horariosDisponiveis, setHorariosDisponiveis] = useState<string[]>([]);
   const [horarioSelecionado, setHorarioSelecionado] = useState<string | null>(null);
+  const [carregando, setCarregando] = useState(false);
 
   useEffect(() => {
     const fetchHorarios = async () => {
       if (!data) {
-        setHorariosOcupados([]);
+        setHorariosDisponiveis([]);
         return;
       }
 
+      setCarregando(true);
       try {
-        const res = await api.get('/agendamento/list/horario-data', {
-          params: { horario: '', dataAgendamento: data },
+        const res = await api.get('/agendamento/horarios-disponiveis', {
+          params: { funcionarioId, dataAgendamento: data }
         });
 
-        const ocupados = res.data
-          .filter((a: any) => a.funcionarioId === funcionarioId)
-          .map((a: any) => a.horario);
-
-        setHorariosOcupados(ocupados);
+        setHorariosDisponiveis(res.data);
       } catch (err) {
-        console.error('Erro ao buscar horários:', err);
+        console.error('Erro ao buscar horários disponíveis:', err);
+        setHorariosDisponiveis([]);
+      } finally {
+        setCarregando(false);
       }
     };
 
     fetchHorarios();
   }, [data, funcionarioId]);
-
-  const horariosDisponiveis = horariosPadrao.filter(h => !horariosOcupados.includes(h));
 
   const selecionar = (hora: string) => {
     setHorarioSelecionado(hora);
@@ -49,7 +46,10 @@ const SelecionarHorarioDisponivel: React.FC<Props> = ({ funcionarioId, data, onS
   return (
     <div className="my-3">
       <label className="form-label d-block">Horários disponíveis</label>
-      {horariosDisponiveis.length === 0 ? (
+
+      {carregando ? (
+        <Spinner animation="border" />
+      ) : horariosDisponiveis.length === 0 ? (
         <p className="text-muted">Nenhum horário disponível neste dia.</p>
       ) : (
         <div className="d-flex flex-wrap gap-2">

@@ -16,6 +16,7 @@ $color-text-dark: #111;
 $color-border-gray: #666;
 $color-bg-hover-subtle: rgba(199, 249, 7, 0.05);
 $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
+
 .hero-section {
   min-height: 80vh;
   display: flex;
@@ -35,25 +36,27 @@ $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
 }
 
 .appointment-card {
-
-
   .rdp {
     --rdp-cell-size: 40px;
     --rdp-accent-color: #{$color-neon};
     --rdp-background-color: #{$color-neon};
     --rdp-selected-color: #{$color-text-dark};
 
-
-    margin: 1em auto;
     font-family: $base-font-family;
     color: $color-text-light;
 
+    display: block;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: auto;
+    margin-right: auto;
 
     .rdp-caption_label {
       font-size: $base-font-size-md;
       font-weight: $base-font-weight-bold;
       text-transform: capitalize;
       letter-spacing: $base-letter-spacing;
+      text-align: center;
     }
 
     .rdp-nav_button {
@@ -67,6 +70,7 @@ $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
 
       svg {
         width: 0.8em;
+        height: 0.8em;
       }
 
       &:hover {
@@ -74,7 +78,6 @@ $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
         background-color: $color-bg-hover-subtle;
         border-color: rgba($color-neon, 0.3);
       }
-
 
       &:focus-visible {
         color: $color-neon;
@@ -139,6 +142,7 @@ $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
     }
   }
 }
+
 .time-slots {
   display: flex;
   flex-wrap: wrap;
@@ -190,13 +194,12 @@ $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
   background-color: transparent;
   border: 1px solid $color-border-gray;
   color: $color-text-light;
-  // Diminuindo o padding e a fonte
-  padding: 0.5rem 1rem;               // Anteriormente: $base-padding-md (0.6rem 1.2rem)
-  font-size: $base-font-size-sm;      // Anteriormente: $base-font-size-md (0.95rem), agora 0.875rem
+  padding: 0.5rem 1rem;
+  font-size: $base-font-size-sm;
   font-family: $base-font-family;
   font-weight: $base-font-weight;
   text-transform: $base-text-transform;
-  letter-spacing: 0.04em;             // Anteriormente: $base-letter-spacing (0.05em)
+  letter-spacing: 0.04em;
   border-radius: $base-border-radius;
   cursor: pointer;
   transition: $base-transition;
@@ -207,14 +210,6 @@ $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
     color: $color-neon;
     background-color: $color-bg-hover-subtle;
     box-shadow: 0 0 8px $color-shadow-hover-subtle;
-  }
-
-  &.selected {
-    background-color: $color-neon !important;
-    color: $color-text-dark !important;
-    border-color: $color-neon !important;
-    font-weight: $base-font-weight-bold;
-    box-shadow: 0 0 10px rgba($color-neon, 0.4);
   }
 
   &.selected {
