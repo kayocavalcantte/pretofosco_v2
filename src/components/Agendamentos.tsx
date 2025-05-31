@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Spinner } from 'react-bootstrap';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Container, Row, Col, Card, Spinner, Button, ListGroup } from 'react-bootstrap'; // Adicionado ListGroup
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import '../styles/Agendamentos.scss';
@@ -10,216 +10,330 @@ import api from '../services/axios';
 interface Funcionario {
   id: number;
   nome: string;
+  ativo?: boolean;
+  horarioInicio?: string; // Ex: "08:00:00" ou "08:00"
+  horarioFinal?: string;  // Ex: "20:00:00" ou "20:00"
 }
 
+interface Servico {
+  id: number;
+  descricao: string;
+}
+
+interface AgendamentoVm {
+  id: number;
+  horario: string;
+  dataAgendamento: string; // Esperado como "yyyy-MM-dd" do backend
+}
+
+const timeToMinutes = (timeStr: string): number => {
+  if (!timeStr || !timeStr.includes(':')) return 0;
+  const parts = timeStr.split(':');
+  const hours = parseInt(parts[0], 10);
+  const minutes = parseInt(parts[1], 10);
+  return hours * 60 + minutes;
+};
+
+const minutesToTime = (totalMinutes: number): string => {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+};
+
 const Agendamentos: React.FC = () => {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [agendamentoRealizado, setAgendamentoRealizado] = useState(false);
 
-  const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
-  const [selectedFuncionarioId, setSelectedFuncionarioId] = useState<number | null>(null); // Inicia como null
-  const [isLoadingFuncionarios, setIsLoadingFuncionarios] = useState<boolean>(true);
+  const [allFuncionarios, setAllFuncionarios] = useState<Funcionario[]>([]); // Todos funcionários da API
+  const [activeFuncionarios, setActiveFuncionarios] = useState<Funcionario[]>([]); // Apenas ativos para seleção
+  const [selectedFuncionarioId, setSelectedFuncionarioId] = useState<number | null>(null); // Começa como null
+  
+  const [availableServices, setAvailableServices] = useState<Servico[]>([]);
+  
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
+  const [isLoadingTimeSlots, setIsLoadingTimeSlots] = useState<boolean>(false);
+  
+  const [isLoadingInitialData, setIsLoadingInitialData] = useState<boolean>(true); // Loading geral para funcionários e serviços
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // Loading para o handleConfirm
 
-  const timeSlots = ['10:00', '11:30', '14:00', '16:30', '18:00'];
-  const services = ['Corte de cabelo', 'Pintura', 'Sobrancelha'];
 
   useEffect(() => {
-    const fetchFuncionarios = async () => {
-      setIsLoadingFuncionarios(true);
+    const fetchData = async () => {
+      setIsLoadingInitialData(true);
       try {
-        const response = await api.get<Funcionario[]>('/funcionarios/listar/ativos'); // Ajuste seu endpoint
-        const fetchedFuncionarios = response.data;
-        setFuncionarios(fetchedFuncionarios);
+        // Fetch Funcionários
+        const funcResponse = await api.get<Funcionario[]>('/funcionario/listar'); // Endpoint CORRIGIDO
+        const fetchedFuncionarios = funcResponse.data || [];
+        console.log("Funcionários recebidos da API:", fetchedFuncionarios);
+        setAllFuncionarios(fetchedFuncionarios);
+        
+        const ativos = fetchedFuncionarios.filter(f => f.ativo);
+        setActiveFuncionarios(ativos);
+        console.log("Funcionários ativos para seleção:", ativos);
 
-        if (fetchedFuncionarios && fetchedFuncionarios.length === 1) {
-          setSelectedFuncionarioId(fetchedFuncionarios[0].id);
-          console.log('Funcionário único selecionado automaticamente:', fetchedFuncionarios[0]);
-        } else if (fetchedFuncionarios && fetchedFuncionarios.length > 1) {
-          // Se há múltiplos, seleciona o primeiro como padrão.
-          // Idealmente, aqui você teria uma UI para o usuário escolher.
-          setSelectedFuncionarioId(fetchedFuncionarios[0].id);
-          console.warn('Múltiplos funcionários ativos encontrados. Selecionando o primeiro por padrão:', fetchedFuncionarios[0]);
+        if (ativos.length === 1) {
+          setSelectedFuncionarioId(ativos[0].id); // Auto-seleciona se só tiver um ativo
+          console.log("Funcionário único ativo auto-selecionado:", ativos[0]);
         } else {
-          // Nenhum funcionário ativo encontrado pela API.
-          // Para "nunca" mostrar a mensagem de erro e permitir prosseguir, definimos um ID padrão.
-          // Certifique-se que o funcionário com ID 1 realmente existe e é válido.
-          setSelectedFuncionarioId(1); // ID do funcionário padrão
-          console.warn('Nenhum funcionário ativo encontrado via API. Usando ID de funcionário padrão: 1');
+          setSelectedFuncionarioId(null); // Requer seleção manual se múltiplos ou nenhum
         }
+
+        // Fetch Serviços
+        const servResponse = await api.get<Servico[]>('/servico/listar');
+        setAvailableServices(servResponse.data || []);
+        console.log("Serviços disponíveis carregados:", servResponse.data);
+
       } catch (error) {
-        console.error('Erro ao buscar funcionários:', error);
-        // Fallback para um ID padrão em caso de erro na API também, para "nunca" bloquear a UI.
-        setSelectedFuncionarioId(1); // ID do funcionário padrão
-        console.warn('Falha ao buscar funcionários via API. Usando ID de funcionário padrão: 1');
+        console.error('Erro ao buscar dados iniciais (funcionários/serviços):', error);
+        setActiveFuncionarios([]);
+        setAvailableServices([]);
       } finally {
-        setIsLoadingFuncionarios(false);
+        setIsLoadingInitialData(false);
       }
     };
-
-    fetchFuncionarios();
+    fetchData();
   }, []);
 
-  // ... (handleDateSelect, handleTimeSelect, toggleService, buscarIdsDosServicos são os mesmos) ...
-  const handleDateSelect = (day: Date | undefined) => {
-    setSelectedDay(day); setSelectedTime(null); setSelectedServices([]);
-    setStep(day ? 2 : 1); setAgendamentoRealizado(false);
-  };
-  const handleTimeSelect = (time: string) => {
-    setSelectedTime(time); setStep(3); setAgendamentoRealizado(false);
-  };
-  const toggleService = (service: string) => {
-    setSelectedServices(prev => prev.includes(service) ? prev.filter(s => s !== service) : [...prev, service]);
-  };
-  const buscarIdsDosServicos = async (descricoes: string[]) => {
-    const res = await api.get('/servico/listar');
-    const todosServicos = res.data;
-    return todosServicos.filter((s: any) => descricoes.includes(s.descricao)).map((s: any) => s.id);
+
+  useEffect(() => {
+    // Resetar seleções se o funcionário mudar
+    setSelectedDay(undefined);
+    setSelectedTime(null);
+    setSelectedServices([]);
+    setAgendamentoRealizado(false);
+    setAvailableTimeSlots([]);
+  }, [selectedFuncionarioId]);
+
+
+  useEffect(() => {
+    if (selectedDay && selectedFuncionarioId && allFuncionarios.length > 0) {
+      const funcionarioSelecionado = allFuncionarios.find(f => f.id === selectedFuncionarioId);
+      console.log("Tentando gerar horários para o funcionário:", funcionarioSelecionado);
+
+      if (!funcionarioSelecionado || !funcionarioSelecionado.horarioInicio || !funcionarioSelecionado.horarioFinal) {
+        console.warn("Dados de horário (inicio/fim) do funcionário selecionado estão incompletos ou ausentes.", funcionarioSelecionado);
+        setAvailableTimeSlots([]);
+        return;
+      }
+      
+      console.log(`Gerando horários com base em: Início=${funcionarioSelecionado.horarioInicio}, Fim=${funcionarioSelecionado.horarioFinal}`);
+
+      const gerarHorarios = async () => {
+        setIsLoadingTimeSlots(true);
+        setAvailableTimeSlots([]); // Limpa slots antigos antes de buscar novos
+        try {
+          const response = await api.get<AgendamentoVm[]>(`/agendamento/list/funcionario/${selectedFuncionarioId}`);
+          const todosAgendamentosFuncionario = response.data || [];
+          const dataSelecionadaFormatada = format(selectedDay, 'yyyy-MM-dd');
+          
+          const horariosOcupados = todosAgendamentosFuncionario
+            .filter(ag => ag.dataAgendamento === dataSelecionadaFormatada)
+            .map(ag => ag.horario);
+          console.log(`Horários ocupados para ${dataSelecionadaFormatada} do func ${selectedFuncionarioId}:`, horariosOcupados);
+
+          const slots: string[] = [];
+          const inicioTrabalhoMin = timeToMinutes(funcionarioSelecionado.horarioInicio!);
+          const fimTrabalhoMin = timeToMinutes(funcionarioSelecionado.horarioFinal!);
+          const intervaloMin = 60;
+
+          for (let currentTimeMin = inicioTrabalhoMin; currentTimeMin < fimTrabalhoMin; currentTimeMin += intervaloMin) {
+            const slot = minutesToTime(currentTimeMin);
+            if (!horariosOcupados.includes(slot)) {
+              slots.push(slot);
+            }
+          }
+          setAvailableTimeSlots(slots);
+          console.log("Horários disponíveis gerados:", slots);
+
+        } catch (error) {
+          console.error("Erro ao buscar agendamentos para gerar horários:", error);
+          setAvailableTimeSlots([]);
+        } finally {
+          setIsLoadingTimeSlots(false);
+        }
+      };
+      gerarHorarios();
+    } else {
+      setAvailableTimeSlots([]);
+    }
+  }, [selectedDay, selectedFuncionarioId, allFuncionarios]);
+
+
+  const handleFuncionarioSelect = (funcionarioId: number) => {
+    setSelectedFuncionarioId(funcionarioId);
+    // Outras lógicas de reset já estão no useEffect que depende de selectedFuncionarioId
   };
 
+  const handleDateSelect = (day: Date | undefined) => {
+    setSelectedDay(day);
+    setSelectedTime(null);
+    setSelectedServices([]); // Mantém reset de serviços ao mudar data, mas não de funcionário
+    setAgendamentoRealizado(false);
+  };
+
+  const handleTimeSelect = (time: string) => {
+    setSelectedTime(time);
+    setAgendamentoRealizado(false);
+  };
+
+  const toggleService = (serviceDescription: string) => {
+    setSelectedServices(prev =>
+      prev.includes(serviceDescription) ? prev.filter(s => s !== serviceDescription) : [...prev, serviceDescription]
+    );
+  };
+
+  const buscarIdsDosServicos = useCallback(async (descricoes: string[]): Promise<number[]> => {
+    if (descricoes.length === 0) return [];
+    try {
+      // Usa os availableServices já carregados para evitar chamada extra, se preferir.
+      // Mas buscar da API garante dados mais recentes se eles puderem mudar frequentemente.
+      const response = await api.get<Servico[]>('/servico/listar');
+      const todosServicosDoBackend = response.data || [];
+      return todosServicosDoBackend
+        .filter(servico => descricoes.includes(servico.descricao.trim()))
+        .map(servico => servico.id);
+    } catch (error) { console.error('Erro ao buscar IDs dos serviços:', error); return []; }
+  }, []);
 
   const handleConfirm = async () => {
-    if (!selectedFuncionarioId) { // Esta verificação é importante
-      alert('Funcionário não pôde ser determinado. Não é possível agendar.');
-      console.error('ID do funcionário não está definido para o agendamento.');
+    if (!selectedFuncionarioId || !selectedDay || !selectedTime || selectedServices.length === 0) {
+      alert('Por favor, selecione o profissional, dia, horário e pelo menos um serviço.');
       return;
     }
-    if (!selectedDay || !selectedTime || selectedServices.length === 0) {
-      alert('Por favor, selecione o dia, horário e pelo menos um serviço.');
-      return;
-    }
-
+    setIsSubmitting(true);
     try {
+      const idsDosServicosParaSalvar = await buscarIdsDosServicos(selectedServices);
       const dto = {
         funcionarioId: selectedFuncionarioId,
         horario: selectedTime,
-        dataAgendamento: format(selectedDay, 'yyyy-MM-dd'),
+        dataAgendamento: format(selectedDay, 'dd/MM/yyyy'),
+        servicoId: idsDosServicosParaSalvar
       };
-      // ... (resto da lógica de handleConfirm) ...
-      const response = await api.post('/agendamento/register', dto);
-      const agendamentoId = response.data.id;
-      const servicoIds = await buscarIdsDosServicos(selectedServices);
-      await api.post('/agendamento-servico', { agendamentoId, servicoIds });
+      await api.post('/agendamento/register', dto);
       setAgendamentoRealizado(true);
-
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao agendar:', error);
-      const errorMessage = (error as any)?.response?.data?.message || (error as any)?.response?.data || 'Erro ao realizar agendamento. Verifique os dados ou se o horário já está ocupado.';
+      let errorMessage = 'Erro ao realizar agendamento.';
+       if (error.response && error.response.data) {
+        if (typeof error.response.data.message === 'string') { errorMessage = error.response.data.message; }
+        else if (typeof error.response.data === 'string') { errorMessage = error.response.data; }
+        else if (error.response.data.errors && Array.isArray(error.response.data.errors)) {
+            errorMessage = error.response.data.errors.map((err: any) => err.defaultMessage || err.msg || err).join(', ');
+        }
+      } else if (error.message) { errorMessage = error.message; }
       alert(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleReset = () => {
-    // ... (lógica existente) ...
+    setSelectedFuncionarioId(activeFuncionarios.length === 1 ? activeFuncionarios[0].id : null); // Reset para auto-seleção ou manual
     setSelectedDay(undefined); setSelectedTime(null); setSelectedServices([]);
-    setStep(1); setAgendamentoRealizado(false);
+    setAgendamentoRealizado(false);
   };
 
-  if (isLoadingFuncionarios) {
-    return (
-      <Container className="text-center py-5">
-        <Spinner animation="border" role="status" />
-        <p className="mt-2">Carregando...</p>
-      </Container>
-    );
+  const getSelectedFuncionarioNome = () => {
+    if (!selectedFuncionarioId) return 'Nenhum profissional selecionado';
+    return allFuncionarios.find(f => f.id === selectedFuncionarioId)?.nome || `Profissional (ID ${selectedFuncionarioId})`;
   }
 
-  // Com o fallback para selectedFuncionarioId = 1, a mensagem de "nenhum funcionário"
-  // não deve mais bloquear a renderização principal da UI de agendamento.
-  // A verificação !selectedFuncionarioId no handleConfirm é a guarda final.
+  if (isLoadingInitialData) { 
+    return ( <Container className="text-center py-5"><Spinner animation="border" variant="light" /><p className="mt-2 micro-text text-white">Carregando dados iniciais...</p></Container>);
+  }
 
   return (
     <section className="hero-section">
-      {/* ... (Conteúdo da sua seção, Card, DayPicker, etc., como antes) ... */}
-      {/* Você pode querer exibir o nome do funcionário se ele foi carregado */}
       <Container>
-        <Row className="justify-content-center text-center mb-5">
-          <Col xs={12} md={10} lg={8}>
-            <h1 className="brand-title">Preto Fosco</h1>
-            <p className="micro-text">Corte, Cor e Tranças</p>
-          </Col>
+        <Row className="justify-content-center text-center mb-4">
+          <Col xs={12} md={10} lg={8}><h1 className="brand-title">Preto Fosco</h1><p className="micro-text">Corte, Cor e Tranças</p></Col>
         </Row>
-
         <Row className="justify-content-center">
           <Col xs={12} sm={10} md={8} lg={6} xl={5}>
             <Card className="appointment-card">
               <Card.Body className="d-flex flex-column align-items-center text-center">
-                <h3 className="micro-text mb-4">Agende seu horário</h3>
+                {isSubmitting && (<div className="py-5"><Spinner animation="border" variant="light" /><p className="mt-2 micro-text text-white">Processando agendamento...</p></div>)}
 
-                {selectedFuncionarioId && funcionarios.length > 0 && (
-                  <p className="micro-text mb-3">
-                    Para o profissional: <strong>
-                      { (funcionarios.find(f => f.id === selectedFuncionarioId) || {nome: `ID ${selectedFuncionarioId} (nome não carregado)`} ).nome }
-                    </strong>
-                  </p>
-                )}
-                {!selectedFuncionarioId && !isLoadingFuncionarios && (
-                    <p className="text-warning micro-text mb-3">Atenção: Funcionário padrão selecionado. Verifique se o funcionário correto está sendo considerado.</p>
-                )}
+                {!isSubmitting && !agendamentoRealizado && (
+                  <>
+                    <h3 className="micro-text mb-3">Agende seu horário</h3>
 
-                <DayPicker
-                  mode="single"
-                  selected={selectedDay}
-                  onSelect={handleDateSelect}
-                  locale={ptBR}
-                  showOutsideDays
-                  fixedWeeks
-                  disabled={{ before: new Date() }}
-                />
-                {selectedDay && !agendamentoRealizado && (
-                  <div className="mt-4 text-center fade-in w-100">
-                    <p className="micro-text">Horários disponíveis</p>
-                    <div className="time-slots">
-                      {timeSlots.map((time, index) => (
-                        <button
-                          key={index}
-                          className={`time-slot ${selectedTime === time ? 'selected' : ''}`}
-                          onClick={() => handleTimeSelect(time)}
-                        >
-                          {time}
-                        </button>
-                      ))}
-                    </div>
-                    {selectedTime && step >= 2 && (
-                      <p className="mt-3 text-white">
-                        Horário selecionado: <strong>{selectedTime}</strong>
-                      </p>
+                    {/* SELEÇÃO DE FUNCIONÁRIO */}
+                    {!selectedFuncionarioId && activeFuncionarios.length > 1 && (
+                      <div className="mb-4 w-100">
+                        <p className="micro-text">Escolha o profissional:</p>
+                        <ListGroup>
+                          {activeFuncionarios.map(func => (
+                            <ListGroup.Item action key={func.id} onClick={() => handleFuncionarioSelect(func.id)} active={selectedFuncionarioId === func.id}>
+                              {func.nome}
+                            </ListGroup.Item>
+                          ))}
+                        </ListGroup>
+                      </div>
                     )}
-                  </div>
+                    {activeFuncionarios.length === 0 && !isLoadingInitialData && (
+                         <p className="micro-text text-warning my-3">Nenhum profissional disponível no momento.</p>
+                    )}
+
+                    {/* SELEÇÃO DE DATA (só aparece se um funcionário foi selecionado ou auto-selecionado) */}
+                    {selectedFuncionarioId && (
+                      <>
+                        <p className="micro-text mt-3 mb-1">Atendendo com: <strong>{getSelectedFuncionarioNome()}</strong></p>
+                        <p className="micro-text mb-3">Escolha uma data:</p>
+                        <DayPicker mode="single" selected={selectedDay} onSelect={handleDateSelect} locale={ptBR} showOutsideDays fixedWeeks disabled={{ before: new Date() }} />
+                      </>
+                    )}
+                    
+                    {/* SELEÇÃO DE HORÁRIO (só aparece se dia e funcionário estiverem selecionados) */}
+                    {selectedFuncionarioId && selectedDay && (
+                      <div className="mt-4 text-center fade-in w-100">
+                        <p className="micro-text">Horários disponíveis para {format(selectedDay, 'dd/MM/yyyy', { locale: ptBR })}</p>
+                        {isLoadingTimeSlots ? (
+                          <div className="my-3"><Spinner animation="border" size="sm" variant="light"/><span className="micro-text text-white ms-2">Verificando horários...</span></div>
+                        ) : availableTimeSlots.length > 0 ? (
+                          <div className="time-slots">
+                            {availableTimeSlots.map((time, index) => (
+                              <button key={index} className={`time-slot ${selectedTime === time ? 'selected' : ''}`} onClick={() => handleTimeSelect(time)}>{time}</button>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="micro-text text-warning my-3">Nenhum horário disponível para esta data/profissional.</p>
+                        )}
+                        {selectedTime && (<p className="mt-3 micro-text text-white">Horário selecionado: <strong>{selectedTime}</strong></p>)}
+                      </div>
+                    )}
+
+                    {/* SELEÇÃO DE SERVIÇOS E CONFIRMAÇÃO (só aparece se funcionário, dia e hora estiverem selecionados) */}
+                    {selectedFuncionarioId && selectedDay && selectedTime && (
+                      <div className="mt-4 fade-in w-100">
+                        <p className="micro-text">Escolha os serviços desejados</p>
+                        {isLoadingInitialData && availableServices.length === 0 ? ( 
+                          <div className="my-3"><Spinner animation="border" size="sm" variant="light" /><span className="micro-text text-white ms-2">Carregando serviços...</span></div>
+                        ) : availableServices.length > 0 ? (
+                          <div className="service-options">
+                            {availableServices.map(service => (
+                              <button key={service.id} className={`service-btn ${selectedServices.includes(service.descricao) ? 'selected' : ''}`} onClick={() => toggleService(service.descricao)}>{service.descricao}</button>
+                            ))}
+                          </div>
+                        ) : (<p className="micro-text text-warning my-3">Nenhum serviço cadastrado.</p>)}
+                        <Button variant="primary" className="confirm-btn mt-4" onClick={handleConfirm} disabled={selectedServices.length === 0 || isLoadingInitialData || isLoadingTimeSlots}>Confirmar Agendamento</Button>
+                      </div>
+                    )}
+                    {!selectedFuncionarioId && activeFuncionarios.length <= 1 && !isLoadingInitialData && (
+                        <p className="mt-4 text-center text-muted small">Selecione um profissional para continuar.</p>
+                    )}
+                  </>
                 )}
-                {step === 3 && selectedDay && selectedTime && !agendamentoRealizado && (
-                  <div className="mt-4 fade-in w-100">
-                    <p className="micro-text">Escolha os serviços desejados</p>
-                    <div className="service-options">
-                      {services.map(service => (
-                        <button
-                          key={service}
-                          className={`service-btn ${selectedServices.includes(service) ? 'selected' : ''}`}
-                          onClick={() => toggleService(service)}
-                        >
-                          {service}
-                        </button>
-                      ))}
-                    </div>
-                    <button className="confirm-btn mt-3" onClick={handleConfirm} disabled={!selectedFuncionarioId}>
-                      Confirmar Agendamento
-                    </button>
-                  </div>
-                )}
-                {agendamentoRealizado && (
+                
+                {/* TELA DE SUCESSO */}
+                {!isSubmitting && agendamentoRealizado && (
                   <div className="mt-4 text-center fade-in">
-                    <p className="text-success">✅ Agendamento realizado com sucesso!</p>
-                    <button onClick={handleReset} className="mt-3 novo-agendamento-btn">
-                      Novo agendamento
-                    </button>
+                    <p className="text-success h5">✅ Agendamento realizado com sucesso!</p>
+                    {selectedDay && selectedTime && (<p className='micro-text text-white mt-3'>Seu horário para <strong>{getSelectedFuncionarioNome()}</strong> no dia <strong>{format(selectedDay, 'dd/MM/yyyy')}</strong> às <strong>{selectedTime}</strong>{selectedServices.length > 0 && ` para ${selectedServices.join(', ')}`} foi confirmado.</p>)}
+                    <Button variant="secondary" onClick={handleReset} className="mt-4 novo-agendamento-btn">Fazer Novo Agendamento</Button>
                   </div>
-                )}
-                {step === 1 && (
-                  <p className="mt-4 text-center text-muted small">
-                    Selecione uma data para ver os horários disponíveis.
-                  </p>
                 )}
               </Card.Body>
             </Card>
