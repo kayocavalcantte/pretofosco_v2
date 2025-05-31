@@ -32,7 +32,7 @@ function AppContent() {
   if (isLoggedIn) {
     if (role === 'admin') {
       CurrentHeader = <HeaderAdmin />;
-    } else if (role === 'user') {
+    } else if (role === 'user' || role === 'cliente') {
       CurrentHeader = <HeaderUsuario />;
     }
   }

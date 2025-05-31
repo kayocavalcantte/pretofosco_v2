@@ -7,44 +7,59 @@ import api from '../services/axios';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { setIsLoggedIn, setRole } = useAuth(); // pegando funções do contexto
+  const { setIsLoggedIn, setRole } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
-      const response = await api.post('/auth/login', { email, senha });
+      const response = await api.post('/auth/login', { email, senha }, {
+                        headers: { 'Content-Type': 'application/json' }
+                      });
+;
       const token = response.data.token;
 
-      // Salva o token no localStorage
+      if (!token) throw new Error('Token não recebido');
+
+      // Salva token no localStorage
       localStorage.setItem('token', token);
 
-      // Decodifica o token para extrair o perfil
+      // Decodifica payload do token JWT
       const payloadBase64 = token.split('.')[1];
       const decodedPayload = JSON.parse(atob(payloadBase64));
-      const perfil = decodedPayload.perfil.toLowerCase(); // "ADMIN" → "admin"
 
-      // Salva o perfil no localStorage para o contexto carregar depois
+      // Ajuste o nome do campo conforme seu token JWT, aqui assumi 'perfil'
+      const perfilRaw = decodedPayload.perfil || decodedPayload.role || decodedPayload.roles;
+
+      if (!perfilRaw) throw new Error('Perfil não encontrado no token');
+
+      // Se for array, pega o primeiro, senão pega direto
+      const perfil = Array.isArray(perfilRaw) ? perfilRaw[0].toLowerCase() : perfilRaw.toLowerCase();
+
+      // Salva perfil no localStorage
       localStorage.setItem('userRole', perfil);
 
-      // Atualiza o contexto global
+      // Atualiza contexto global
       setIsLoggedIn(true);
       setRole(perfil);
 
-      // Redireciona conforme o papel
+      // Redireciona conforme perfil
       if (perfil === 'admin') {
         navigate('/agenda');
       } else {
         navigate('/agendamentos');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao fazer login:', error);
-      alert('Email ou senha inválidos.');
+      alert(error.response?.data?.message || 'Email ou senha inválidos.');
+    } finally {
+      setLoading(false);
     }
   };
-
 
   return (
     <section className="login-section">
@@ -63,6 +78,7 @@ const Login: React.FC = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Digite seu email"
                       required
+                      disabled={loading}
                     />
                   </Form.Group>
 
@@ -74,16 +90,22 @@ const Login: React.FC = () => {
                       onChange={(e) => setSenha(e.target.value)}
                       placeholder="Digite sua senha"
                       required
+                      disabled={loading}
                     />
                   </Form.Group>
 
-                  <Button type="submit" className="w-100 neon-btn">
-                    Entrar
+                  <Button type="submit" className="w-100 neon-btn" disabled={loading}>
+                    {loading ? 'Entrando...' : 'Entrar'}
                   </Button>
 
                   <Form.Text className="d-block text-center mt-3 auth-links">
-                    <span onClick={() => navigate('/esqueci-senha')}>Esqueci minha senha</span> ·{' '}
-                    <span onClick={() => navigate('/cadastro')}>Criar conta</span>
+                    <span onClick={() => navigate('/esqueci-senha')} style={{ cursor: 'pointer' }}>
+                      Esqueci minha senha
+                    </span>{' '}
+                    ·{' '}
+                    <span onClick={() => navigate('/cadastro')} style={{ cursor: 'pointer' }}>
+                      Criar conta
+                    </span>
                   </Form.Text>
                 </Form>
               </Card.Body>
