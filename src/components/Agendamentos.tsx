@@ -6,7 +6,7 @@ import '../styles/Agendamentos.scss';
 import { ptBR } from 'date-fns/locale';
 import { format } from 'date-fns';
 import api from '../services/axios';
-
+import { FaWhatsapp } from 'react-icons/fa';
 interface Funcionario {
   id: number;
   nome: string;
@@ -317,7 +317,7 @@ const Agendamentos: React.FC = () => {
                             ))}
                           </div>
                         ) : (<p className="micro-text text-warning my-3">Nenhum serviço cadastrado.</p>)}
-                        <Button variant="primary" className="confirm-btn mt-4" onClick={handleConfirm} disabled={selectedServices.length === 0 || isLoadingInitialData || isLoadingTimeSlots}>Confirmar Agendamento</Button>
+                        <Button className="confirm-btn mt-4" onClick={handleConfirm} disabled={selectedServices.length === 0 || isLoadingInitialData || isLoadingTimeSlots}>Confirmar Agendamento</Button>
                       </div>
                     )}
                     {!selectedFuncionarioId && activeFuncionarios.length <= 1 && !isLoadingInitialData && (
@@ -329,15 +329,25 @@ const Agendamentos: React.FC = () => {
                 {/* TELA DE SUCESSO */}
                 {!isSubmitting && agendamentoRealizado && (
                   <div className="mt-4 text-center fade-in">
-                    <p className="text-success h5">Agendamento realizado com sucesso!</p>
+                    <p className="h5 success-message-neon">Agendamento realizado com sucesso!</p>
                     {selectedDay && selectedTime && (<p className='micro-text text-white mt-3'>Seu horário no dia <strong>{format(selectedDay, 'dd/MM/yyyy')}</strong> às <strong>{selectedTime}</strong>{selectedServices.length > 0 && ` para ${selectedServices.join(', ')}`} foi confirmado.</p>)}
-                    <Button variant="secondary" onClick={handleReset} className="mt-4 novo-agendamento-btn">Fazer Novo Agendamento</Button>
+                    <Button onClick={handleReset} className="mt-4 novo-agendamento-btn">Fazer Novo Agendamento</Button>
+                    <a
+                      href="https://wa.me/message/6F2P4DSKLGZVH1" // SEU LINK FIXO AQUI
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="whatsapp-btn mt-3"
+                    >
+                      <FaWhatsapp size={18} />
+                      <span style={{ marginLeft: '8px' }}>Enviar Mensagem no WhatsApp</span>
+                    </a>
                   </div>
                 )}
               </Card.Body>
             </Card>
           </Col>
         </Row>
+
       </Container>
     </section>
   );
