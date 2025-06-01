@@ -49,12 +49,12 @@ const Agendamentos: React.FC = () => {
   const [allFuncionarios, setAllFuncionarios] = useState<Funcionario[]>([]); // Todos funcionários da API
   const [activeFuncionarios, setActiveFuncionarios] = useState<Funcionario[]>([]); // Apenas ativos para seleção
   const [selectedFuncionarioId, setSelectedFuncionarioId] = useState<number | null>(null); // Começa como null
-  
+
   const [availableServices, setAvailableServices] = useState<Servico[]>([]);
-  
+
   const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
   const [isLoadingTimeSlots, setIsLoadingTimeSlots] = useState<boolean>(false);
-  
+
   const [isLoadingInitialData, setIsLoadingInitialData] = useState<boolean>(true); // Loading geral para funcionários e serviços
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // Loading para o handleConfirm
 
@@ -68,7 +68,7 @@ const Agendamentos: React.FC = () => {
         const fetchedFuncionarios = funcResponse.data || [];
         console.log("Funcionários recebidos da API:", fetchedFuncionarios);
         setAllFuncionarios(fetchedFuncionarios);
-        
+
         const ativos = fetchedFuncionarios.filter(f => f.ativo);
         setActiveFuncionarios(ativos);
         console.log("Funcionários ativos para seleção:", ativos);
@@ -117,7 +117,7 @@ const Agendamentos: React.FC = () => {
         setAvailableTimeSlots([]);
         return;
       }
-      
+
       console.log(`Gerando horários com base em: Início=${funcionarioSelecionado.horarioInicio}, Fim=${funcionarioSelecionado.horarioFinal}`);
 
       const gerarHorarios = async () => {
@@ -127,7 +127,7 @@ const Agendamentos: React.FC = () => {
           const response = await api.get<AgendamentoVm[]>(`/agendamento/list/funcionario/${selectedFuncionarioId}`);
           const todosAgendamentosFuncionario = response.data || [];
           const dataSelecionadaFormatada = format(selectedDay, 'yyyy-MM-dd');
-          
+
           const horariosOcupados = todosAgendamentosFuncionario
             .filter(ag => ag.dataAgendamento === dataSelecionadaFormatada)
             .map(ag => ag.horario);
@@ -240,7 +240,7 @@ const Agendamentos: React.FC = () => {
     return allFuncionarios.find(f => f.id === selectedFuncionarioId)?.nome || `Profissional (ID ${selectedFuncionarioId})`;
   }
 
-  if (isLoadingInitialData) { 
+  if (isLoadingInitialData) {
     return ( <Container className="text-center py-5"><Spinner animation="border" variant="light" /><p className="mt-2 micro-text text-white">Carregando dados iniciais...</p></Container>);
   }
 
@@ -280,12 +280,11 @@ const Agendamentos: React.FC = () => {
                     {/* SELEÇÃO DE DATA (só aparece se um funcionário foi selecionado ou auto-selecionado) */}
                     {selectedFuncionarioId && (
                       <>
-                        <p className="micro-text mt-3 mb-1">Atendendo com: <strong>{getSelectedFuncionarioNome()}</strong></p>
                         <p className="micro-text mb-3">Escolha uma data:</p>
                         <DayPicker mode="single" selected={selectedDay} onSelect={handleDateSelect} locale={ptBR} showOutsideDays fixedWeeks disabled={{ before: new Date() }} />
                       </>
                     )}
-                    
+
                     {/* SELEÇÃO DE HORÁRIO (só aparece se dia e funcionário estiverem selecionados) */}
                     {selectedFuncionarioId && selectedDay && (
                       <div className="mt-4 text-center fade-in w-100">
@@ -309,7 +308,7 @@ const Agendamentos: React.FC = () => {
                     {selectedFuncionarioId && selectedDay && selectedTime && (
                       <div className="mt-4 fade-in w-100">
                         <p className="micro-text">Escolha os serviços desejados</p>
-                        {isLoadingInitialData && availableServices.length === 0 ? ( 
+                        {isLoadingInitialData && availableServices.length === 0 ? (
                           <div className="my-3"><Spinner animation="border" size="sm" variant="light" /><span className="micro-text text-white ms-2">Carregando serviços...</span></div>
                         ) : availableServices.length > 0 ? (
                           <div className="service-options">
@@ -326,12 +325,12 @@ const Agendamentos: React.FC = () => {
                     )}
                   </>
                 )}
-                
+
                 {/* TELA DE SUCESSO */}
                 {!isSubmitting && agendamentoRealizado && (
                   <div className="mt-4 text-center fade-in">
-                    <p className="text-success h5">✅ Agendamento realizado com sucesso!</p>
-                    {selectedDay && selectedTime && (<p className='micro-text text-white mt-3'>Seu horário para <strong>{getSelectedFuncionarioNome()}</strong> no dia <strong>{format(selectedDay, 'dd/MM/yyyy')}</strong> às <strong>{selectedTime}</strong>{selectedServices.length > 0 && ` para ${selectedServices.join(', ')}`} foi confirmado.</p>)}
+                    <p className="text-success h5">Agendamento realizado com sucesso!</p>
+                    {selectedDay && selectedTime && (<p className='micro-text text-white mt-3'>Seu horário no dia <strong>{format(selectedDay, 'dd/MM/yyyy')}</strong> às <strong>{selectedTime}</strong>{selectedServices.length > 0 && ` para ${selectedServices.join(', ')}`} foi confirmado.</p>)}
                     <Button variant="secondary" onClick={handleReset} className="mt-4 novo-agendamento-btn">Fazer Novo Agendamento</Button>
                   </div>
                 )}

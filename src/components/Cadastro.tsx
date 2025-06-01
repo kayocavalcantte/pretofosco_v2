@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Form, Card, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Cadastro.scss';
+import api from '../services/axios';
 
 const Cadastro: React.FC = () => {
   const navigate = useNavigate();
@@ -10,23 +11,49 @@ const Cadastro: React.FC = () => {
   const [telefone, setTelefone] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
     if (!nome || !email || !telefone || !senha || !confirmarSenha) {
       alert('Preencha todos os campos.');
+      setIsLoading(false);
       return;
     }
 
     if (senha !== confirmarSenha) {
       alert('As senhas não coincidem.');
+      setIsLoading(false);
       return;
     }
 
-    alert('Cadastro realizado com sucesso!');
-    // Aqui futuramente: chamada à API de criação de usuário
-    navigate('/login');
+    const userData = {
+      nome,
+      email,
+      telefone,
+      senha,
+    };
+
+    try {
+      console.log('Enviando dados de cadastro:', userData);
+      const response = await api.post('/usuario/register', userData);
+      console.log('Resposta do cadastro:', response.data);
+      alert('Cadastro realizado com sucesso!');
+      navigate('/login');
+    } catch (error: any) {
+      console.error('Erro ao cadastrar:', error);
+      let errorMessage = 'Não foi possível realizar o cadastro. Tente novamente.';
+      if (error.response && error.response.data) {
+        errorMessage = error.response.data.message || error.response.data.error || JSON.stringify(error.response.data);
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      alert(`Erro: ${errorMessage}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -45,6 +72,7 @@ const Cadastro: React.FC = () => {
                       value={nome}
                       onChange={(e) => setNome(e.target.value)}
                       required
+                      disabled={isLoading}
                     />
                   </Form.Group>
 
@@ -55,6 +83,7 @@ const Cadastro: React.FC = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
+                      disabled={isLoading}
                     />
                   </Form.Group>
 
@@ -65,6 +94,7 @@ const Cadastro: React.FC = () => {
                       value={telefone}
                       onChange={(e) => setTelefone(e.target.value)}
                       required
+                      disabled={isLoading}
                     />
                   </Form.Group>
 
@@ -75,6 +105,7 @@ const Cadastro: React.FC = () => {
                       value={senha}
                       onChange={(e) => setSenha(e.target.value)}
                       required
+                      disabled={isLoading}
                     />
                   </Form.Group>
 
@@ -85,18 +116,21 @@ const Cadastro: React.FC = () => {
                       value={confirmarSenha}
                       onChange={(e) => setConfirmarSenha(e.target.value)}
                       required
+                      disabled={isLoading}
                     />
                   </Form.Group>
 
-                  <Button type="submit" className="w-100 neon-btn">
-                    Cadastrar
+                  <Button type="submit" className="w-100 neon-btn" disabled={isLoading}>
+                    {isLoading ? 'Cadastrando...' : 'Cadastrar'}
                   </Button>
 
-                  <div className="text-center">
+                  <div className="text-center mt-3">
                     <Button
                       type="button"
+                      variant="link" // Ou seu estilo para "voltar-btn"
                       className="voltar-btn"
                       onClick={() => navigate('/login')}
+                      disabled={isLoading}
                     >
                       Voltar
                     </Button>
