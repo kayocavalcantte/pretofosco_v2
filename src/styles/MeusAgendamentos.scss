@@ -112,5 +112,48 @@ $color-shadow-hover-subtle: rgba(199, 249, 7, 0.2);
     }
   }
 
+.neon-btn { // Pode ser .btn.neon-btn para maior especificidade sobre o Bootstrap
+  background-color: $color-neon;
+  color: $color-text-dark;
+  border: 1px solid $color-neon; // Ou um tom mais escuro de neon para a borda
+  padding: $base-padding-md;     // Ajuste o padding se necessário
+  font-size: $base-font-size-md; // Ajuste o tamanho da fonte
+  font-family: $base-font-family;
+  font-weight: $base-font-weight-bold;
+  text-transform: $base-text-transform;
+  letter-spacing: $base-letter-spacing;
+  border-radius: $base-border-radius;
+  cursor: pointer;
+  transition: $base-transition;
+  text-align: center;
+  display: inline-block;
+  width: auto; // Ou 100% se quiser que ocupe toda a largura
+
+  &:hover,
+  &:focus {
+    background-color: lighten($color-neon, 7%);
+    border-color: lighten($color-neon, 7%);
+    color: $color-text-dark;
+    box-shadow: 0 0 12px rgba($color-neon, 0.5);
+  }
+
+  &:active {
+    background-color: darken($color-neon, 5%);
+    border-color: darken($color-neon, 10%);
+    color: $color-text-dark;
+  }
+
+  // Estilo para quando estiver desabilitado (opcional)
+  // O React-Bootstrap <Button> adiciona o atributo 'disabled'
+  &[disabled] {
+    background-color: desaturate(lighten($color-neon, 20%), 60%) !important;
+    border-color: desaturate(lighten($color-neon, 15%), 60%) !important;
+    color: lighten($color-text-dark, 30%) !important;
+    opacity: 0.65 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+  }
+}
+
 
 }

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Card, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth, UserRole } from '../contexts/AuthContext';
 import '../styles/Login.scss';
 import api from '../services/axios';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { setIsLoggedIn, setRole } = useAuth();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,45 +17,36 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await api.post('/auth/login', { email, senha }, {
-                        headers: { 'Content-Type': 'application/json' }
-                      });
-;
-      const token = response.data.token;
+      const response = await api.post('/auth/login', { email, senha });
 
-      if (!token) throw new Error('Token não recebido');
+      const { token, userId: apiUserId, role: apiRoleString } = response.data;
 
-      // Salva token no localStorage
-      localStorage.setItem('token', token);
-
-      // Decodifica payload do token JWT
-      const payloadBase64 = token.split('.')[1];
-      const decodedPayload = JSON.parse(atob(payloadBase64));
-
-      // Ajuste o nome do campo conforme seu token JWT, aqui assumi 'perfil'
-      const perfilRaw = decodedPayload.perfil || decodedPayload.role || decodedPayload.roles;
-
-      if (!perfilRaw) throw new Error('Perfil não encontrado no token');
-
-      // Se for array, pega o primeiro, senão pega direto
-      const perfil = Array.isArray(perfilRaw) ? perfilRaw[0].toLowerCase() : perfilRaw.toLowerCase();
-
-      // Salva perfil no localStorage
-      localStorage.setItem('userRole', perfil);
-
-      // Atualiza contexto global
-      setIsLoggedIn(true);
-      setRole(perfil);
-
-      // Redireciona conforme perfil
-      if (perfil === 'admin') {
-        navigate('/agenda');
-      } else {
-        navigate('/agendamentos');
+      if (!token || apiUserId === undefined || apiUserId === null || !apiRoleString) {
+        throw new Error('Resposta de login inválida do servidor (token, userId ou role ausentes).');
       }
+
+      const userRoleForContext = apiRoleString.toUpperCase() as UserRole;
+
+      login(token, userRoleForContext, apiUserId);
+
+      if (userRoleForContext === 'ADMIN' || userRoleForContext === 'FUNCIONARIO') {
+        navigate('/agenda');
+      } else if (userRoleForContext === 'CLIENTE') {
+        navigate('/agendamentos');
+      } else {
+        console.warn(`Perfil não reconhecido para redirecionamento: ${userRoleForContext}`);
+        navigate('/');
+      }
+
     } catch (error: any) {
       console.error('Erro ao fazer login:', error);
-      alert(error.response?.data?.message || 'Email ou senha inválidos.');
+      let errorMessage = 'Email ou senha inválidos.';
+      if (error.response && error.response.data) {
+        errorMessage = error.response.data.message || error.response.data.error || JSON.stringify(error.response.data);
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -25,7 +25,7 @@ interface Agendamento {
   emailUsuario?: string;  // Email do cliente
   telefoneUsuario?: string; // Telefone do cliente
   // Adicionando nome do funcionário se o backend puder fornecer (opcional)
-  // nomeFuncionario?: string; 
+  // nomeFuncionario?: string;
   servicos: Servico[]; // Lista de serviços já incluída pelo backend
 }
 
@@ -76,7 +76,7 @@ const MeusAgendamentos: React.FC = () => {
           statusAgendamento: 'DESMARCADO'
         };
         await api.put('/agendamento/edit/status', statusDto);
-  
+
         // Atualiza o estado local para refletir a mudança imediatamente
         setAgendamentos(prevAgendamentos =>
           prevAgendamentos.map(ag =>
@@ -90,7 +90,7 @@ const MeusAgendamentos: React.FC = () => {
       }
     }
   };
-  
+
   const editarAgendamento = (id: number) => {
     // Navegar para uma página de edição, passando o ID do agendamento
     // Você precisará criar essa rota e o componente de edição.
@@ -149,7 +149,7 @@ const MeusAgendamentos: React.FC = () => {
               <Card className="agendamento-card-empty text-center">
                 <Card.Body>
                   <p className="text-muted">Você ainda não possui agendamentos.</p>
-                  <Button variant="success" className="neon-btn mt-3" onClick={() => navigate('/agendamentos')}>
+                  <Button className="neon-btn mt-3" onClick={() => navigate('/agendamentos')}>
                     Fazer um novo agendamento
                   </Button>
                 </Card.Body>
