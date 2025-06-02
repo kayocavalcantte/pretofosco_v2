@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'; // Adicionado useRef
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { format, startOfDay, parse } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { Container, Row, Col, Card, Spinner, Alert, Button as BootstrapButton, Dropdown } from 'react-bootstrap';
 import api from '../services/axios';
-import '../styles/Agenda.scss'; // Seu SCSS que ajustamos
-import { Edit3, PlusCircle, MoreVertical, Calendar as CalendarIcon } from 'lucide-react'; // Adicionado CalendarIcon
+import '../styles/Agenda.scss';
+import { Edit3, PlusCircle, MoreVertical, Calendar as CalendarIcon } from 'lucide-react';
 
 interface ServicoBasico {
   id: number;
@@ -16,16 +16,13 @@ interface ServicoBasico {
 interface AppointmentInfo {
   id: number;
   funcionarioId: number;
-  usuarioId: number; // ID do Usuario cliente
-  horario: string;   // "HH:mm"
-  dataAgendamento: string; // ESPERADO COMO "yyyy-MM-dd" DO BACKEND
+  usuarioId: number;
+  horario: string;
+  dataAgendamento: string;
   statusAgendamento: 'ESPERA' | 'ATENDIDO' | 'DESMARCADO' | string;
-  nomeUsuario?: string; // Nome do Usuario cliente
+  nomeUsuario?: string;
   servicos?: ServicoBasico[];
 }
-
-// FuncionarioInfo não é mais necessária aqui se os horários de funcionamento são fixos
-// Se você voltar a buscar dinamicamente os horários do funcionário, reative-a.
 
 const timeToMinutes = (timeStr?: string): number => {
   if (!timeStr || !timeStr.includes(':')) { console.warn(`[AgendaUtils] timeToMinutes: formato inválido ${timeStr}`); return -1; }
@@ -49,20 +46,16 @@ const AgendaVisaoFuncionario: React.FC = () => {
   const [timeGridSlots, setTimeGridSlots] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Estado e Ref para o calendário recolhível
   const [showCalendar, setShowCalendar] = useState(false);
-  const calendarContainerRef = useRef<HTMLDivElement>(null); // Ref para o container do dropdown do calendário
+  const calendarContainerRef = useRef<HTMLDivElement>(null);
+  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
-  // Estes são fixos para esta visualização, conforme definido anteriormente.
-  // Se fossem dinâmicos (baseados no funcionário logado), seriam buscados em um useEffect.
-  const ID_FUNCIONARIO_ATUAL = 1; 
-  const NOME_FUNCIONARIO_ATUAL = "Preto Fosco"; 
+  const ID_FUNCIONARIO_ATUAL = 1;
+  const NOME_FUNCIONARIO_ATUAL = "Preto Fosco";
   const HORARIO_INICIO_BARBEARIA = "08:00";
   const HORARIO_FIM_BARBEARIA = "20:00";
   const INTERVALO_MINUTOS = 60;
 
-  // Efeito para fechar o calendário ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (calendarContainerRef.current && !calendarContainerRef.current.contains(event.target as Node)) {
@@ -80,7 +73,6 @@ const AgendaVisaoFuncionario: React.FC = () => {
   }, [showCalendar]);
 
   const generateTimeGridSlots = useCallback(() => {
-    // ... (lógica de generateTimeGridSlots como antes, já está correta) ...
     const slots: string[] = [];
     const inicioMin = timeToMinutes(HORARIO_INICIO_BARBEARIA);
     const fimMin = timeToMinutes(HORARIO_FIM_BARBEARIA);
@@ -88,7 +80,7 @@ const AgendaVisaoFuncionario: React.FC = () => {
       const errorMsg = `Config. horário (${HORARIO_INICIO_BARBEARIA}-${HORARIO_FIM_BARBEARIA}) inválida.`;
       setError(errorMsg); setTimeGridSlots([]); return false;
     }
-    setError(null); 
+    setError(null);
     for (let currentMin = inicioMin; currentMin < fimMin; currentMin += INTERVALO_MINUTOS) {
       slots.push(minutesToTime(currentMin));
     }
@@ -96,19 +88,33 @@ const AgendaVisaoFuncionario: React.FC = () => {
   }, [HORARIO_INICIO_BARBEARIA, HORARIO_FIM_BARBEARIA, INTERVALO_MINUTOS]);
 
   const fetchAppointmentsForSelectedDate = useCallback(async (date: Date) => {
-    // ... (lógica de fetchAppointmentsForSelectedDate como antes, já está correta) ...
-    if (!ID_FUNCIONARIO_ATUAL) { /* ... */ return; }
-    if (!generateTimeGridSlots()) { /* ... */  return; }
+    if (!ID_FUNCIONARIO_ATUAL) {
+        setError("ID do funcionário não definido.");
+        setIsLoading(false);
+        setAppointmentsForDay([]);
+        return;
+    }
+    if (!generateTimeGridSlots()) {
+        setIsLoading(false);
+        setAppointmentsForDay([]);
+        return;
+    }
     setIsLoading(true); setError(null); setAppointmentsForDay([]);
     try {
       const response = await api.get<AppointmentInfo[]>(`/agendamento/list/funcionario/${ID_FUNCIONARIO_ATUAL}`);
       const allAppointmentsForEmployee = response.data || [];
       const dateStringToCompare = format(date, 'yyyy-MM-dd');
-      const filteredAppointments = allAppointmentsForEmployee.filter(app => 
+
+      const filteredAppointments = allAppointmentsForEmployee.filter(app =>
           app.dataAgendamento === dateStringToCompare && app.statusAgendamento !== 'DESMARCADO'
       );
       setAppointmentsForDay(filteredAppointments);
-    } catch (err: any) { /* ... */ setError(err.response?.data?.message || "Erro ao carregar agendamentos.");
+    } catch (err: any) {
+      let detailedError = err.response?.data?.message || "Erro ao carregar agendamentos.";
+      if (err.response?.status === 403) {
+        detailedError += " Acesso negado. Verifique as permissões.";
+      }
+      setError(detailedError);
     } finally { setIsLoading(false); }
   }, [ID_FUNCIONARIO_ATUAL, generateTimeGridSlots]);
 
@@ -116,7 +122,7 @@ const AgendaVisaoFuncionario: React.FC = () => {
     if (selectedDate) {
       fetchAppointmentsForSelectedDate(selectedDate);
     } else {
-      generateTimeGridSlots(); 
+      generateTimeGridSlots();
       setAppointmentsForDay([]);
     }
   }, [selectedDate, fetchAppointmentsForSelectedDate, generateTimeGridSlots]);
@@ -124,65 +130,95 @@ const AgendaVisaoFuncionario: React.FC = () => {
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       setSelectedDate(startOfDay(date));
-      setShowCalendar(false); // Fecha o calendário ao selecionar
+      setShowCalendar(false);
     }
   };
 
   const handleChangeStatus = async (appointmentId: number, newStatus: AppointmentInfo['statusAgendamento']) => {
-    // ... (lógica como antes) ...
     setIsLoading(true);
     try {
       await api.put('/agendamento/edit/status', { id: appointmentId, statusAgendamento: newStatus });
       if (selectedDate) fetchAppointmentsForSelectedDate(selectedDate);
-      alert(`Status do agendamento #${appointmentId} alterado para ${newStatus}`);
-    } catch (err: any) { /* ... */ alert(err.response?.data?.message || "Falha ao atualizar status.");
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Falha ao atualizar status.");
     } finally { setIsLoading(false); }
   };
 
   const handleEditAppointment = (appointmentId: number) => {
     alert(`Editar agendamento ${appointmentId} (não implementado).`);
   };
-  
-  const handleAddNewAppointmentGeneral = () => { // Renomeado para diferenciar
+
+  const handleAddNewAppointmentGeneral = () => {
      const dataFormatada = selectedDate ? format(selectedDate, 'PPP', { locale: ptBR }) : 'data não selecionada';
      alert(`Adicionar novo agendamento para ${NOME_FUNCIONARIO_ATUAL} em ${dataFormatada} (não implementado).`);
   };
 
-
   const renderAgendaGrid = () => {
-    // ... (lógica de renderAgendaGrid como antes, já está correta para exibir cards ou slots livres vazios) ...
-    if (isLoading && timeGridSlots.length === 0) { // Ajuste na condição de loading da grade
+    if (isLoading && timeGridSlots.length === 0) {
       return (<div className="text-center py-4"><Spinner animation="border" size="sm" variant="light" /><span className="ms-2 micro-text">Carregando agenda...</span></div>);
     }
-    if (error) { /* ... */ }
-    if (!selectedDate) { /* ... */ }
-    if (timeGridSlots.length === 0 && !isLoading ) { /* ... */ }
+    if (error) { return (<Alert variant="danger" className="text-center mt-3">{error}</Alert>); }
+    if (!selectedDate) { return (<Alert variant="info" className="text-center mt-3">Selecione uma data para ver a agenda.</Alert>)}
+    if (timeGridSlots.length === 0 && !isLoading ) { return (<Alert variant="warning" className="text-center mt-3">Não foi possível gerar os horários. Verifique a configuração.</Alert>)}
 
     return (
       <div className="agenda-grid-funcionario">
         <div className="agenda-header-funcionario sticky-header-funcionario">Horário</div>
         <div className="agenda-header-funcionario sticky-header-funcionario">{NOME_FUNCIONARIO_ATUAL}</div>
+
         {timeGridSlots.map((timeSlot) => {
           const appointmentInSlot = appointmentsForDay.find(
             (app) => app.horario === timeSlot && app.funcionarioId === ID_FUNCIONARIO_ATUAL
           );
+
+          const handleDropdownToggle = (isOpen: boolean, event: any, metadata: {source: string}) => {
+            if (appointmentInSlot) {
+              // Considerar apenas 'click' ou 'rootClose' para evitar fechar com Tab/Escape se não desejar
+              // No entanto, para uma lógica mais simples de apenas rastrear aberto/fechado:
+              if (isOpen) {
+                setOpenDropdownId(appointmentInSlot.id);
+              } else {
+                // Apenas limpa se o dropdown que está fechando é o que estava aberto
+                // Isso previne que fechar um dropdown afete o estado se outro já foi aberto rapidamente.
+                if (openDropdownId === appointmentInSlot.id) {
+                  setOpenDropdownId(null);
+                }
+              }
+            }
+          };
+
           return (
             <React.Fragment key={timeSlot}>
               <div className="hora-label-funcionario">{timeSlot}</div>
-              <div className={`celula-agenda-funcionario ${appointmentInSlot ? 'ocupado' : 'livre'}`}>
+              <div
+                className={
+                  `celula-agenda-funcionario ${appointmentInSlot ? 'ocupado' : 'livre'} ` +
+                  `${(appointmentInSlot && openDropdownId === appointmentInSlot.id) ? 'has-open-dropdown' : ''}`
+                }
+              >
                 {appointmentInSlot ? (
                   <Card className="appointment-details-card-agenda h-100">
                     <Card.Body>
                       <Card.Title className="cliente-nome-agenda">{appointmentInSlot.nomeUsuario || "Cliente"}</Card.Title>
                       <Card.Text className="servicos-agenda">
-                        {appointmentInSlot.servicos && appointmentInSlot.servicos.length > 0 
-                          ? appointmentInSlot.servicos.map((s) => s.descricao).join(' | ') 
+                        {appointmentInSlot.servicos && appointmentInSlot.servicos.length > 0
+                          ? appointmentInSlot.servicos.map((s) => s.descricao).join(' | ')
                           : <span className="text-muted-agenda">Serviço não detalhado</span>}
                       </Card.Text>
                       <div className="status-e-acoes-agenda">
                         <span className={`status-badge status-${appointmentInSlot.statusAgendamento?.toLowerCase()}`}>{appointmentInSlot.statusAgendamento}</span>
-                        <Dropdown drop="start" className="actions-dropdown-container">
-                          <Dropdown.Toggle variant="link" id={`dropdown-actions-${appointmentInSlot.id}`} className="actions-dropdown-toggle p-0"><MoreVertical size={18} /></Dropdown.Toggle>
+                        <Dropdown
+                          drop="start"
+                          className="actions-dropdown-container"
+                          onToggle={handleDropdownToggle}
+                        >
+                          <Dropdown.Toggle
+                            variant="link"
+                            id={`dropdown-actions-${appointmentInSlot.id}`}
+                            className="actions-dropdown-toggle p-0"
+                          >
+                            <MoreVertical size={18} />
+                          </Dropdown.Toggle>
                           <Dropdown.Menu variant="dark">
                             <Dropdown.Item onClick={() => handleChangeStatus(appointmentInSlot.id, 'ATENDIDO')}>Marcar Atendido</Dropdown.Item>
                             <Dropdown.Item onClick={() => handleChangeStatus(appointmentInSlot.id, 'ESPERA')}>Marcar em Espera</Dropdown.Item>
@@ -199,6 +235,7 @@ const AgendaVisaoFuncionario: React.FC = () => {
             </React.Fragment>
           );
         })}
+
         {!isLoading && !error && timeGridSlots.length > 0 && appointmentsForDay.length === 0 && (
             <div className="text-center micro-text text-muted mt-4 py-3 grid-column-span-2">
                 Nenhum agendamento para {NOME_FUNCIONARIO_ATUAL} neste dia.
@@ -216,11 +253,10 @@ const AgendaVisaoFuncionario: React.FC = () => {
             <h2 className="page-title mb-2 mb-md-0">Agenda da Barbearia</h2>
           </Col>
           <Col xs={12} md={5} lg={6} className="d-flex justify-content-md-center my-2 my-md-0">
-            {/* Container do botão e do calendário dropdown */}
             <div className="seletor-data-agenda-dropdown" ref={calendarContainerRef}>
-              <BootstrapButton 
-                onClick={() => setShowCalendar(prev => !prev)} 
-                className="botao-data-agenda" // Use a classe SCSS que você definiu
+              <BootstrapButton
+                onClick={() => setShowCalendar(prev => !prev)}
+                className="botao-data-agenda"
                 aria-expanded={showCalendar}
               >
                 <CalendarIcon size={18} className="me-2" />
@@ -228,13 +264,13 @@ const AgendaVisaoFuncionario: React.FC = () => {
               </BootstrapButton>
 
               {showCalendar && (
-                <div className="calendario-dropdown-container"> {/* Estilize este container para posicionar */}
+                <div className="calendario-dropdown-container">
                   <DayPicker
                     mode="single"
                     selected={selectedDate}
-                    onSelect={handleDateSelect} // handleDateSelect agora também fecha o calendário
+                    onSelect={handleDateSelect}
                     locale={ptBR}
-                    className="day-picker-inline-agenda" // Reutiliza estilos do DayPicker
+                    className="day-picker-inline-agenda"
                     showOutsideDays
                     captionLayout="dropdown-buttons"
                     fromYear={new Date().getFullYear() - 1}
@@ -254,7 +290,7 @@ const AgendaVisaoFuncionario: React.FC = () => {
         <p className="text-center micro-text mb-3">
           Exibindo agenda para: {selectedDate ? format(selectedDate, 'PPP', { locale: ptBR }) : 'Nenhuma data selecionada'}
         </p>
-        
+
         {renderAgendaGrid()}
 
       </Container>

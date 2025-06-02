@@ -10,7 +10,7 @@ $base-font-weight-bold: 700;
 $base-text-transform: uppercase;
 $base-letter-spacing: 0.05em;
 $base-border-radius: 8px;
-$base-padding-sm-vertical: 0.5rem; // Definindo componentes
+$base-padding-sm-vertical: 0.5rem;
 $base-padding-sm-horizontal: 0.8rem;
 $base-padding-md-vertical: 0.8rem;
 $base-padding-md-horizontal: 1.2rem;
@@ -28,10 +28,10 @@ $color-shadow-hover-subtle: rgba(16, 185, 129, 0.3);
 $color-page-bg: #111827;
 $color-card-bg: #1f2937;
 $color-card-header-bg: #1f2937;
-$color-appointment-card-bg: color.adjust($color-card-bg, $lightness: 5%); // Usando color.adjust
+$color-appointment-card-bg: color.adjust($color-card-bg, $lightness: 5%);
 
 $altura-header-admin: 70px;
-$altura-config-agenda: 95px; 
+$altura-config-agenda: 95px;
 
 @mixin card-shadow {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -60,7 +60,7 @@ $altura-config-agenda: 95px;
     margin-bottom: 0;
     position: relative;
     display: inline-block;
-    
+
     &::after {
       content: '';
       position: absolute;
@@ -84,21 +84,21 @@ $altura-config-agenda: 95px;
   background-color: rgba($color-page-bg, 0.9);
   backdrop-filter: blur(8px);
   padding: 1rem 2rem;
-  z-index: 1050; // Z-index alto para ficar sobre a grade, mas abaixo de modais do app se houver
+  z-index: 1050;
   position: sticky;
-  top: $altura-header-admin; // <<<----------- USA A ALTURA DO HeaderAdmin
+  top: $altura-header-admin;
   border-bottom: 1px solid $color-border-darker;
-  margin-left: -2rem; 
+  margin-left: -2rem;
   margin-right: -2rem;
-  width: calc(100% + 4rem); 
+  width: calc(100% + 4rem);
 }
 
-.seletor-data-agenda-dropdown { // Classe para o container do botão e do calendário dropdown
+.seletor-data-agenda-dropdown {
   position: relative;
   display: inline-block;
 }
 
-.botao-data-agenda { // Botão que mostra a data e abre o calendário
+.botao-data-agenda {
   background-color: $color-card-header-bg;
   border: 1px solid $color-border-gray;
   color: $color-text-light;
@@ -128,46 +128,36 @@ $altura-config-agenda: 95px;
   }
 }
 
-.calendario-dropdown-container { // Container do DayPicker quando em modo dropdown
+.calendario-dropdown-container {
   position: absolute;
-  top: calc(100% + 8px); 
-  left: 50%; 
-  transform: translateX(-50%); 
-  z-index: 1100; 
-  min-width: 280px; 
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  min-width: 280px;
 
-  .day-picker-inline-agenda .rdp { // Estilos internos do RDP
-    background-color: $color-card-bg; 
+  .day-picker-inline-agenda .rdp {
+    background-color: $color-card-bg;
     border: 1px solid $color-border-darker;
     border-radius: $base-border-radius;
     padding: 0.8em;
-    @include card-shadow; // Aplicando seu mixin de sombra
+    @include card-shadow;
   }
 }
 
-// Estilos gerais para o DayPicker (seja inline ou dropdown)
-.day-picker-inline-agenda { // Classe usada no componente DayPicker
+.day-picker-inline-agenda {
   .rdp {
     --rdp-cell-size: 36px;
     --rdp-accent-color: #{$color-primary};
     --rdp-background-color: #{$color-primary};
-    --rdp-selected-color: #{$color-text-light};
-    
+    --rdp-selected-color: #{$color-text-dark};
+
     margin: 0;
     font-family: $base-font-family;
     color: $color-text-light;
-    // background-color e border são definidos pelo container (.calendario-dropdown-container ou .seletor-data-agenda se for inline)
-    // Removendo bg e border daqui para evitar duplicação se já estiver no container
-    padding: 0.8em; // Mantém padding interno do RDP
+    padding: 0.8em;
 
-    .rdp-caption {
-      margin-bottom: 0.5rem;
-    }
     .rdp-caption_label {
-      font-size: $base-font-size-md;
-      font-weight: $base-font-weight-bold;
-      text-transform: capitalize;
-      letter-spacing: 0.02em;
       color: $color-primary;
     }
     .rdp-caption_dropdowns {
@@ -175,37 +165,21 @@ $altura-config-agenda: 95px;
         background-color: color.adjust($color-card-bg, $lightness: 5%);
         color: $color-text-light;
         border: 1px solid $color-border-gray;
-        border-radius: math.div($base-border-radius, 2); // Usando math.div
-        padding: 0.3rem 0.6rem; 
-        font-size: $base-font-size-sm;
-        margin: 0 0.15rem;
-        transition: $base-transition;
+        border-radius: math.div($base-border-radius, 2);
         &:focus {
           border-color: $color-primary;
-          outline: none;
           box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
         }
       }
     }
     .rdp-nav_button {
       color: $color-text-muted;
-      border-radius: $base-border-radius;
-      padding: 0.3rem;
-      transition: $base-transition;
       &:hover { color: $color-primary; background-color: $color-bg-hover-subtle; }
-      svg { width: 0.7em; height: 0.7em; }
     }
     .rdp-head_cell {
-      font-weight: $base-font-weight;
-      text-transform: $base-text-transform;
-      font-size: 0.7rem;
       color: $color-text-muted;
-      padding-bottom: 0.5rem;
     }
     .rdp-day {
-      font-weight: $base-font-weight;
-      border-radius: 50%;
-      transition: $base-transition;
       &:hover:not(.rdp-day_disabled):not(.rdp-day_selected) {
         background-color: $color-bg-hover-subtle; color: $color-primary;
       }
@@ -214,13 +188,9 @@ $altura-config-agenda: 95px;
       color: $color-primary; font-weight: $base-font-weight-bold; border: 1px solid $color-primary;
     }
     .rdp-day_selected, .rdp-day_selected:focus-visible, .rdp-day_selected:hover {
-      font-weight: $base-font-weight-bold; box-shadow: 0 0 0 2px rgba($color-primary, 0.3);
+      font-weight: $base-font-weight-bold;
+      box-shadow: 0 0 0 2px rgba($color-primary, 0.3);
     }
-    .rdp-day_outside { opacity: 0.4; }
-    .rdp-day_disabled { opacity: 0.2; cursor: not-allowed; }
-  }
-  .rdp-footer {
-    font-size: $base-font-size-sm * 0.9; padding-top: 0.6em; text-align: center; color: $color-text-muted;
   }
 }
 
@@ -241,12 +211,16 @@ $altura-config-agenda: 95px;
   justify-content: center;
   @include hover-effect;
 
+  &:hover {
+    background-color: $color-primary-hover;
+    color: $color-text-dark;
+  }
   &:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba($color-primary, 0.4);
   }
   &.add-new-btn {
-     padding: ($base-padding-sm-vertical * 0.8) ($base-padding-md-horizontal * 0.8); // Exemplo de uso de componentes
+     padding: ($base-padding-sm-vertical * 0.8) ($base-padding-md-horizontal * 0.8);
      font-size: $base-font-size-sm * 0.9;
    }
 }
@@ -259,10 +233,11 @@ $altura-config-agenda: 95px;
   background-color: $color-card-bg;
   margin-top: 2rem;
   @include card-shadow;
-  overflow: hidden;
+  // overflow: hidden; // Mantido comentado por enquanto, teste se o dropdown é cortado.
+                      // Se não for cortado e o border-radius estiver ok, pode deixar comentado/remover.
 }
 
-agenda-header-funcionario {
+.agenda-header-funcionario {
   text-align: center;
   font-family: $base-font-family;
   font-weight: $base-font-weight-bold;
@@ -271,14 +246,13 @@ agenda-header-funcionario {
   letter-spacing: $base-letter-spacing;
   font-size: $base-font-size-sm;
   padding: $base-padding-md-vertical $base-padding-md-horizontal;
-  background-color: $color-card-header-bg; 
+  background-color: $color-card-header-bg;
   border-bottom: 1px solid $color-border-darker;
 
   &.sticky-header-funcionario {
     position: sticky;
-    // O 'top' aqui é a altura do HeaderAdmin MAIS a altura da barra .sticky-top-config
-    top: calc(#{$altura-header-admin} + #{$altura-config-agenda}); // <<<----------- SOMA DAS ALTURAS
-    z-index: 1000; // Abaixo do .sticky-top-config, mas acima do conteúdo da grade
+    top: calc(#{$altura-header-admin} + #{$altura-config-agenda});
+    z-index: 1000;
   }
 
   &:first-of-type {
@@ -301,7 +275,7 @@ agenda-header-funcionario {
   font-weight: $base-font-weight;
   background-color: rgba($color-card-bg, 0.9);
   position: relative;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -323,6 +297,15 @@ agenda-header-funcionario {
   display: flex;
   background-color: rgba($color-card-bg, 0.7);
 
+  // <<< ADIÇÃO NOVA >>> z-index base para todas as células
+  z-index: 1;
+
+  // <<< ADIÇÃO NOVA >>> Classe para quando o dropdown da célula estiver aberto
+  &.has-open-dropdown {
+    z-index: 20; // Valor maior que o z-index base das outras células
+                 // Este valor pode ser ajustado se necessário, mas deve ser maior que o z-index base.
+  }
+
   &.livre {
     .slot-livre-text {
       display: flex;
@@ -334,7 +317,7 @@ agenda-header-funcionario {
       font-size: $base-font-size-sm * 0.9;
       opacity: 0.6;
     }
-     &:hover { // Adicionado hover para slots livres se o botão de agendar aqui foi removido
+     &:hover {
       background-color: color.adjust($color-card-bg, $lightness: 2%);
     }
   }
@@ -350,7 +333,11 @@ agenda-header-funcionario {
   flex-direction: column;
   border-radius: 0;
   transition: $base-transition;
-  @include hover-effect;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 10px -3px rgba(0,0,0,0.15), 0 2px 4px -2px rgba(0,0,0,0.1);
+  }
 
   .card-body {
     padding: $base-padding-md-vertical $base-padding-md-horizontal;
@@ -380,7 +367,7 @@ agenda-header-funcionario {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
+
   .text-muted-agenda {
     font-style: italic;
     color: $color-text-muted !important;
@@ -394,6 +381,52 @@ agenda-header-funcionario {
     margin-top: auto;
     padding-top: 0.5rem;
     border-top: 1px solid $color-border-gray;
+
+    .actions-dropdown-container {
+      position: relative; // <<< ALTERAÇÃO AQUI >>> Essencial para o contexto do menu
+      // z-index: 10; // Opcional, geralmente não necessário se o position:relative estiver aqui
+
+      .actions-dropdown-toggle {
+        color: $color-text-muted;
+        padding: 0.25rem;
+        line-height: 1;
+        transition: $base-transition;
+        &:hover, &:focus, &:active {
+          color: $color-primary; background-color: transparent !important; box-shadow: none !important;
+        }
+        &::after { display: none; }
+        svg { width: 1.1rem; height: 1.1rem; }
+      }
+
+      .dropdown-menu {
+        background-color: color.adjust($color-card-bg, $lightness: 10%);
+        border: 1px solid $color-border-gray;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        min-width: 180px;
+        padding: 0.35rem;
+        border-radius: math.div($base-border-radius, 2);
+        z-index: 1060; // <<< ALTERAÇÃO AQUI >>> z-index alto para o menu
+                       // Este valor deve ser maior que o z-index das células normais
+                       // e dos cabeçalhos fixos da grade, mas pode ser menor que o
+                       // z-index do calendário principal (.calendario-dropdown-container = 1100)
+
+        .dropdown-item {
+          color: $color-text-light;
+          font-size: $base-font-size-sm;
+          padding: 0.5rem 1rem;
+          border-radius: math.div($base-border-radius, 2); // Uso de variável para consistência
+          margin: 0.1rem 0;
+          transition: $base-transition; // Mantida a transição original do seu arquivo
+
+          &:hover, &:focus { // Mantidos os estilos de hover originais do seu arquivo
+            background-color: $color-bg-hover-subtle;
+            color: $color-primary;
+          }
+          &:active { background-color: rgba($color-primary, 0.15); }
+        }
+        .dropdown-divider { border-top-color: $color-border-gray; margin: 0.35rem 0; }
+      }
+    }
   }
 
   .status-badge {
@@ -407,39 +440,6 @@ agenda-header-funcionario {
     &.status-espera { background-color: rgba(234, 179, 8, 0.2); color: #fbbf24; border: 1px solid rgba(234, 179, 8, 0.3); }
     &.status-atendido { background-color: rgba(16, 185, 129, 0.2); color: $color-primary; border: 1px solid rgba(16, 185, 129, 0.3); }
     &.status-desmarcado { background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-  }
-
-  .actions-dropdown-container {
-    .actions-dropdown-toggle {
-      color: $color-text-muted;
-      padding: 0.25rem;
-      line-height: 1;
-      transition: $base-transition;
-      &:hover, &:focus, &:active {
-        color: $color-primary; background-color: transparent !important; box-shadow: none !important;
-      }
-      &::after { display: none; }
-      svg { width: 1.1rem; height: 1.1rem; }
-    }
-    .dropdown-menu {
-      background-color: color.adjust($color-card-bg, $lightness: 5%);
-      border: 1px solid $color-border-gray;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      min-width: 180px;
-      padding: 0.25rem;
-      border-radius: math.div($base-border-radius, 2);
-      .dropdown-item {
-        color: $color-text-light;
-        font-size: $base-font-size-sm;
-        padding: 0.5rem 1rem; // Corrigido para valores diretos
-        border-radius: 4px;
-        margin: 0.1rem 0;
-        transition: $base-transition;
-        &:hover, &:focus { background-color: $color-bg-hover-subtle; color: $color-primary; }
-        &:active { background-color: rgba($color-primary, 0.15); }
-      }
-      .dropdown-divider { border-top-color: $color-border-gray; margin: 0.25rem 0; }
-    }
   }
 }
 
@@ -457,11 +457,11 @@ agenda-header-funcionario {
   border-width: 0;
   padding: 1rem 1.5rem;
   @include card-shadow;
-  
+
   &.alert-danger { background-color: rgba(220, 38, 38, 0.15); color: #fca5a5; border-left: 4px solid #ef4444; }
   &.alert-warning { background-color: rgba(234, 179, 8, 0.15); color: #fcd34d; border-left: 4px solid #f59e0b; }
   &.alert-info { background-color: rgba(59, 130, 246, 0.15); color: #93c5fd; border-left: 4px solid #3b82f6; }
-  
+
   .btn-outline-danger {
     border-color: #ef4444; color: #fca5a5;
     &:hover { background-color: #ef4444; color: white; }
@@ -485,17 +485,14 @@ agenda-header-funcionario {
     margin-right: -1rem;
     width: calc(100% + 2rem);
     .row > div {
-        flex-basis: 100%;
-        max-width: 100%;
+        flex-basis: auto;
         text-align: center !important;
         margin-bottom: 0.5rem;
-        z-index: 1050;
         &:last-child { margin-bottom: 0; }
     }
-    .seletor-data-agenda { justify-content: center; }
   }
   .agenda-header-funcionario.sticky-header-funcionario {
-      top: 150px; 
+      top: 180px;
   }
   .agenda-grid-funcionario {
     grid-template-columns: 80px 1fr;
@@ -524,4 +521,12 @@ agenda-header-funcionario {
     .day-picker-inline-agenda .rdp {
         --rdp-cell-size: 30px;
     }
+    .action-btn.add-new-btn {
+      font-size: $base-font-size-sm * 0.8;
+      padding: ($base-padding-sm-vertical * 0.7) ($base-padding-md-horizontal * 0.7);
+    }
+     .botao-data-agenda {
+       font-size: $base-font-size-sm * 0.9;
+       padding: $base-padding-sm-vertical $base-padding-sm-horizontal;
+     }
 }
