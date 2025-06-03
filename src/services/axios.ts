@@ -1,31 +1,38 @@
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
-// Cria a instância do axios com a URL base do backend
 const api = axios.create({
-  baseURL: 'http://localhost:8080', // ajuste se necessário
+  baseURL: 'http://localhost:8080', // Altere para a URL da API se subir para produção
 });
 
-// Interceptor para adicionar token no header Authorization
+// Lista de endpoints públicos (que não exigem token)
+const PUBLIC_ENDPOINTS = [
+  '/auth/login',
+  '/usuario/register',
+  '/auth/util/hash-password'
+];
+
+// Interceptor de requisição
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token'); // pega o token salvo
-    if (token) {
+    const isPublic = PUBLIC_ENDPOINTS.some(endpoint => config.url?.includes(endpoint));
+    const token = localStorage.getItem('token');
+
+    if (token && !isPublic) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Interceptor para lidar com respostas
+// Interceptor de resposta
 api.interceptors.response.use(
   response => response,
   error => {
     if (error.response && error.response.status === 401) {
-      // Token inválido ou expirado - desloga o usuário
+      // Token inválido ou expirado
       localStorage.removeItem('token');
-      // Redireciona para /login
       window.location.href = '/login';
     }
     return Promise.reject(error);
