@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://54.198.191.101', // Altere para a URL da API se subir para produção
+  baseURL: '//54.198.191.101', // Altere para a URL da API se subir para produção
 });
 
 // Lista de endpoints públicos (que não exigem token)
