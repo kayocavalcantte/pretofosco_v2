@@ -1,7 +1,9 @@
-@use "sass:math"; // Para math.div()
-@use "sass:color"; // Para color.adjust()
+@use "sass:math";
+@use "sass:color";
 
-// Variáveis Globais (do seu padrão mais recente)
+// ==========================================================================
+// NOVAS VARIÁVEIS GLOBAIS DO SEU PROJETO
+// ==========================================================================
 $base-font-family: 'Inter', sans-serif;
 $base-font-size-sm: 0.875rem;
 $base-font-size-md: 0.95rem;
@@ -9,30 +11,34 @@ $base-font-weight: 500;
 $base-font-weight-bold: 700;
 $base-text-transform: uppercase;
 $base-letter-spacing: 0.05em;
-$base-border-radius: 8px;
-$base-padding-sm-vertical: 0.5rem;
-$base-padding-sm-horizontal: 0.8rem;
-$base-padding-md-vertical: 0.8rem;
-$base-padding-md-horizontal: 1.2rem;
-$base-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+$base-border-radius: 2px; // << Bordas mais retas
+$base-padding-sm: 0.3rem 0.8rem; // Shorthand: vertical horizontal
+$base-padding-md: 0.6rem 1.2rem; // Shorthand: vertical horizontal
+$base-transition: all 0.25s ease; // Nova transição
 
-$color-primary: #10b981;
-$color-primary-hover: #059669;
-$color-text-light: #f3f4f6;
-$color-text-muted: #9ca3af;
-$color-text-dark: #111827;
-$color-border-gray: #374151;
-$color-border-darker: #1f2937;
-$color-bg-hover-subtle: rgba(16, 185, 129, 0.1);
-$color-shadow-hover-subtle: rgba(16, 185, 129, 0.3);
-$color-page-bg: #111827;
-$color-card-bg: #1f2937;
-$color-card-header-bg: #1f2937;
-$color-appointment-card-bg: color.adjust($color-card-bg, $lightness: 5%);
+$color-neon: #c7f907; // << Seu novo verde neon primário
+$color-neon-hover: darken($color-neon, 15%); // Derivado para hover
 
+$color-text-light: #ccc;
+$color-text-dark: #111; // Também será usado como fundo da página
+$color-border-gray: #666; // Usado para bordas e texto "muted"
+
+$color-bg-hover-subtle: rgba(199, 249, 7, 0.05); // Usa a base do neon
+$color-shadow-hover-subtle: rgba(199, 249, 7, 0.2); // Usa a base do neon
+
+// Cores derivadas para o tema "Preto Fosco"
+$color-page-bg-actual: $color-text-dark; // #111
+$color-card-bg-actual: lighten($color-page-bg-actual, 7%); // ex: #1D1D1D
+$color-card-header-bg-actual: $color-card-bg-actual;
+$color-appointment-card-bg-actual: lighten($color-card-bg-actual, 5%); // ex: #252525 (ajustado)
+$color-border-darker-actual: lighten($color-page-bg-actual, 10%); // ex: #2A2A2A
+$color-text-muted-actual: $color-border-gray; // #666
+
+// Variáveis de layout existentes
 $altura-header-admin: 70px;
 $altura-config-agenda: 95px;
 
+// Mixins existentes
 @mixin card-shadow {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
@@ -45,15 +51,19 @@ $altura-config-agenda: 95px;
   }
 }
 
+// ==========================================================================
+// ESTILOS DA PÁGINA DA AGENDA ADAPTADOS
+// ==========================================================================
+
 .agenda-page-container {
   padding: 1.5rem 2rem;
   font-family: $base-font-family;
-  background-color: $color-page-bg;
-  color: $color-text-light;
+  background-color: $color-page-bg-actual; // ADAPTADO
+  color: $color-text-light; // ADAPTADO
   min-height: 100vh;
 
   .page-title {
-    color: $color-text-light;
+    color: $color-text-light; // ADAPTADO
     font-weight: $base-font-weight-bold;
     font-size: 1.75rem;
     letter-spacing: $base-letter-spacing * 0.8;
@@ -68,26 +78,26 @@ $altura-config-agenda: 95px;
       left: 0;
       width: 60px;
       height: 3px;
-      background: $color-primary;
-      border-radius: 3px;
+      background: $color-neon; // ADAPTADO
+      border-radius: 3px; // Poderia ser $base-border-radius se desejado
     }
   }
 
   .micro-text {
     font-size: $base-font-size-sm;
-    color: $color-text-muted;
+    color: $color-text-muted-actual; // ADAPTADO
     letter-spacing: 0.02em;
   }
 }
 
 .sticky-top-config {
-  background-color: rgba($color-page-bg, 0.9);
+  background-color: rgba($color-page-bg-actual, 0.9); // ADAPTADO
   backdrop-filter: blur(8px);
   padding: 1rem 2rem;
   z-index: 1050;
   position: sticky;
   top: $altura-header-admin;
-  border-bottom: 1px solid $color-border-darker;
+  border-bottom: 1px solid $color-border-darker-actual; // ADAPTADO
   margin-left: -2rem;
   margin-right: -2rem;
   width: calc(100% + 4rem);
@@ -98,32 +108,74 @@ $altura-config-agenda: 95px;
   display: inline-block;
 }
 
-.botao-data-agenda {
-  background-color: $color-card-header-bg;
-  border: 1px solid $color-border-gray;
-  color: $color-text-light;
-  padding: $base-padding-sm-vertical $base-padding-md-horizontal;
+.btn.action-btn, // Alvo para elementos que têm ambas as classes .btn e .action-btn
+button.action-btn { // Alvo mais específico para tags <button> com a classe .action-btn
+  background-color: $color-neon;
+  border-color: $color-neon; // Importante definir a cor da borda também
+  color: $color-text-dark;
+  padding: $base-padding-md;
+  font-family: $base-font-family;
+  font-size: $base-font-size-sm;
+  font-weight: $base-font-weight-bold;
+  letter-spacing: $base-letter-spacing;
+  text-transform: $base-text-transform;
+  border-radius: $base-border-radius;
+  transition: $base-transition;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  // Removendo @include hover-effect; para definir o hover explicitamente abaixo com alta especificidade
+
+  &:hover,
+  &:focus { // Combinando hover e focus para consistência
+    background-color: $color-neon-hover;
+    border-color: $color-neon-hover; // Cor da borda no hover
+    color: $color-text-dark;
+    transform: translateY(-2px); // Efeito do seu mixin hover-effect
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); // Efeito do seu mixin
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($color-neon, 0.4), 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); // Combina box-shadow do focus e do hover
+  }
+
+  // A classe .add-new-btn já será coberta pela especificidade aumentada se estiver no mesmo elemento
+  &.add-new-btn {
+     padding: $base-padding-sm;
+     font-size: $base-font-size-sm * 0.9;
+     // Se precisar de outros estilos específicos para .add-new-btn que não são cobertos
+     // pelas regras de .btn.action-btn, adicione-os aqui.
+     // Ex: background-color: $color-neon !important; // Se ainda houver teimosia
+   }
+}
+
+.btn.botao-data-agenda {
+  background-color: $color-card-header-bg-actual; // ADAPTADO
+  border: 1px solid $color-border-gray; // ADAPTADO
+  color: $color-text-light; // ADAPTADO
+  padding: $base-padding-md; // ADAPTADO para shorthand
   font-family: $base-font-family;
   font-size: $base-font-size-md;
   font-weight: $base-font-weight;
   letter-spacing: 0.02em;
-  border-radius: $base-border-radius;
+  border-radius: $base-border-radius; // ADAPTADO
   cursor: pointer;
-  transition: $base-transition;
+  transition: $base-transition; // ADAPTADO
   display: inline-flex;
   align-items: center;
 
   svg {
-    transition: $base-transition;
+    transition: $base-transition; // ADAPTADO
   }
 
   &:hover, &:focus, &[aria-expanded="true"] {
-    border-color: $color-primary;
-    color: $color-primary;
-    background-color: color.adjust($color-card-header-bg, $lightness: 5%);
-    box-shadow: 0 0 8px $color-shadow-hover-subtle;
+    border-color: $color-neon; // ADAPTADO
+    color: $color-neon; // ADAPTADO
+    background-color: color.adjust($color-card-header-bg-actual, $lightness: 5%); // ADAPTADO
+    box-shadow: 0 0 8px $color-shadow-hover-subtle; // ADAPTADO
     svg {
-      fill: $color-primary;
+      fill: $color-neon; // ADAPTADO
     }
   }
 }
@@ -133,13 +185,13 @@ $altura-config-agenda: 95px;
   top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1100;
+  z-index: 1070;
   min-width: 280px;
 
   .day-picker-inline-agenda .rdp {
-    background-color: $color-card-bg;
-    border: 1px solid $color-border-darker;
-    border-radius: $base-border-radius;
+    background-color: $color-card-bg-actual; // ADAPTADO
+    border: 1px solid $color-border-darker-actual; // ADAPTADO
+    border-radius: $base-border-radius; // ADAPTADO
     padding: 0.8em;
     @include card-shadow;
   }
@@ -148,79 +200,94 @@ $altura-config-agenda: 95px;
 .day-picker-inline-agenda {
   .rdp {
     --rdp-cell-size: 36px;
-    --rdp-accent-color: #{$color-primary};
-    --rdp-background-color: #{$color-primary};
-    --rdp-selected-color: #{$color-text-dark};
+    --rdp-accent-color: #{$color-neon}; // ADAPTADO
+    --rdp-background-color: #{$color-neon}; // ADAPTADO (fundo do dia selecionado)
+    --rdp-selected-color: #{$color-text-dark}; // ADAPTADO (texto do dia selecionado, para contraste com neon)
 
     margin: 0;
     font-family: $base-font-family;
-    color: $color-text-light;
+    color: $color-text-light; // ADAPTADO
     padding: 0.8em;
 
     .rdp-caption_label {
-      color: $color-primary;
+      color: $color-neon; // ADAPTADO
     }
     .rdp-caption_dropdowns {
       select {
-        background-color: color.adjust($color-card-bg, $lightness: 5%);
-        color: $color-text-light;
-        border: 1px solid $color-border-gray;
-        border-radius: math.div($base-border-radius, 2);
+        background-color: color.adjust($color-card-bg-actual, $lightness: 5%); // ADAPTADO
+        color: $color-text-light; // ADAPTADO
+        border: 1px solid $color-border-gray; // ADAPTADO
+        border-radius: math.div($base-border-radius, 1); // ADAPTADO (ou apenas $base-border-radius)
+        padding: 0.3rem 0.6rem;
+        font-size: $base-font-size-sm;
+        margin: 0 0.15rem;
+        transition: $base-transition; // ADAPTADO
         &:focus {
-          border-color: $color-primary;
-          box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
+          border-color: $color-neon; // ADAPTADO
+          outline: none;
+          box-shadow: 0 0 0 2px rgba($color-neon, 0.2); // ADAPTADO
         }
       }
     }
     .rdp-nav_button {
-      color: $color-text-muted;
-      &:hover { color: $color-primary; background-color: $color-bg-hover-subtle; }
+      color: $color-text-muted-actual; // ADAPTADO
+      border-radius: $base-border-radius; // ADAPTADO
+      padding: 0.3rem;
+      transition: $base-transition; // ADAPTADO
+      &:hover { color: $color-neon; background-color: $color-bg-hover-subtle; } // ADAPTADO
+      svg { width: 0.7em; height: 0.7em; }
     }
     .rdp-head_cell {
-      color: $color-text-muted;
+      font-weight: $base-font-weight;
+      text-transform: $base-text-transform;
+      font-size: 0.7rem;
+      color: $color-text-muted-actual; // ADAPTADO
+      padding-bottom: 0.5rem;
     }
     .rdp-day {
+      font-weight: $base-font-weight;
+      border-radius: 50%; // Mantido para dias redondos
+      transition: $base-transition; // ADAPTADO
       &:hover:not(.rdp-day_disabled):not(.rdp-day_selected) {
-        background-color: $color-bg-hover-subtle; color: $color-primary;
+        background-color: $color-bg-hover-subtle; color: $color-neon; // ADAPTADO
       }
     }
     .rdp-day_today:not(.rdp-day_selected) {
-      color: $color-primary; font-weight: $base-font-weight-bold; border: 1px solid $color-primary;
+      color: $color-neon; font-weight: $base-font-weight-bold; border: 1px solid $color-neon; // ADAPTADO
     }
     .rdp-day_selected, .rdp-day_selected:focus-visible, .rdp-day_selected:hover {
-      font-weight: $base-font-weight-bold;
-      box-shadow: 0 0 0 2px rgba($color-primary, 0.3);
+      font-weight: $base-font-weight-bold; box-shadow: 0 0 0 2px rgba($color-neon, 0.3); // ADAPTADO
     }
   }
 }
 
 .action-btn {
-  background-color: $color-primary;
+  background-color: $color-neon; // ADAPTADO
   border: none;
-  color: $color-text-dark;
-  padding: $base-padding-md-vertical $base-padding-md-horizontal;
+  color: $color-text-dark; // ADAPTADO (para contraste com neon)
+  padding: $base-padding-md; // ADAPTADO para shorthand
   font-family: $base-font-family;
   font-size: $base-font-size-sm;
   font-weight: $base-font-weight-bold;
   letter-spacing: $base-letter-spacing;
   text-transform: $base-text-transform;
-  border-radius: $base-border-radius;
-  transition: $base-transition;
+  border-radius: $base-border-radius; // ADAPTADO
+  transition: $base-transition; // ADAPTADO
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  @include hover-effect;
+  @include hover-effect; // Mixin usa $base-transition
 
   &:hover {
-    background-color: $color-primary-hover;
-    color: $color-text-dark;
+    background-color: $color-neon-hover; // ADAPTADO
+    color: $color-text-dark; // Mantido
   }
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba($color-primary, 0.4);
+    box-shadow: 0 0 0 3px rgba($color-neon, 0.4); // ADAPTADO
   }
   &.add-new-btn {
-     padding: ($base-padding-sm-vertical * 0.8) ($base-padding-md-horizontal * 0.8);
+     padding: $base-padding-sm; // ADAPTADO - Usando o novo $base-padding-sm
      font-size: $base-font-size-sm * 0.9;
    }
 }
@@ -228,26 +295,25 @@ $altura-config-agenda: 95px;
 .agenda-grid-funcionario {
   display: grid;
   grid-template-columns: 100px 1fr;
-  border: 1px solid $color-border-darker;
-  border-radius: $base-border-radius;
-  background-color: $color-card-bg;
+  border: 1px solid $color-border-darker-actual; // ADAPTADO
+  border-radius: $base-border-radius; // ADAPTADO
+  background-color: $color-card-bg-actual; // ADAPTADO
   margin-top: 2rem;
   @include card-shadow;
-  // overflow: hidden; // Mantido comentado por enquanto, teste se o dropdown é cortado.
-                      // Se não for cortado e o border-radius estiver ok, pode deixar comentado/remover.
+  // overflow: hidden; // Mantido comentado.
 }
 
 .agenda-header-funcionario {
   text-align: center;
   font-family: $base-font-family;
   font-weight: $base-font-weight-bold;
-  color: $color-primary;
+  color: $color-neon; // ADAPTADO
   text-transform: $base-text-transform;
   letter-spacing: $base-letter-spacing;
   font-size: $base-font-size-sm;
-  padding: $base-padding-md-vertical $base-padding-md-horizontal;
-  background-color: $color-card-header-bg;
-  border-bottom: 1px solid $color-border-darker;
+  padding: $base-padding-md; // ADAPTADO para shorthand
+  background-color: $color-card-header-bg-actual; // ADAPTADO
+  border-bottom: 1px solid $color-border-darker-actual; // ADAPTADO
 
   &.sticky-header-funcionario {
     position: sticky;
@@ -256,24 +322,24 @@ $altura-config-agenda: 95px;
   }
 
   &:first-of-type {
-    border-right: 1px solid $color-border-darker;
+    border-right: 1px solid $color-border-darker-actual; // ADAPTADO
   }
 }
 
 .hora-label-funcionario {
   text-align: center;
   font-family: $base-font-family;
-  color: $color-text-muted;
+  color: $color-text-muted-actual; // ADAPTADO
   font-size: $base-font-size-sm;
-  padding: $base-padding-md-vertical $base-padding-md-horizontal;
-  border-right: 1px solid $color-border-darker;
-  border-bottom: 1px solid $color-border-darker;
+  padding: $base-padding-md; // ADAPTADO para shorthand
+  border-right: 1px solid $color-border-darker-actual; // ADAPTADO
+  border-bottom: 1px solid $color-border-darker-actual; // ADAPTADO
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 110px;
   font-weight: $base-font-weight;
-  background-color: rgba($color-card-bg, 0.9);
+  background-color: rgba($color-card-bg-actual, 0.9); // ADAPTADO
   position: relative;
 
   &::after {
@@ -284,26 +350,22 @@ $altura-config-agenda: 95px;
     transform: translateX(-50%);
     width: 30px;
     height: 1px;
-    background: $color-border-darker;
+    background: $color-border-darker-actual; // ADAPTADO
   }
 }
 
 .celula-agenda-funcionario {
-  border-bottom: 1px solid $color-border-darker;
+  border-bottom: 1px solid $color-border-darker-actual; // ADAPTADO
   padding: 0;
   min-height: 110px;
   position: relative;
-  transition: $base-transition;
+  transition: $base-transition; // ADAPTADO
   display: flex;
-  background-color: rgba($color-card-bg, 0.7);
-
-  // <<< ADIÇÃO NOVA >>> z-index base para todas as células
+  background-color: rgba($color-card-bg-actual, 0.7); // ADAPTADO
   z-index: 1;
 
-  // <<< ADIÇÃO NOVA >>> Classe para quando o dropdown da célula estiver aberto
   &.has-open-dropdown {
-    z-index: 20; // Valor maior que o z-index base das outras células
-                 // Este valor pode ser ajustado se necessário, mas deve ser maior que o z-index base.
+    z-index: 20;
   }
 
   &.livre {
@@ -313,26 +375,26 @@ $altura-config-agenda: 95px;
       justify-content: center;
       width: 100%;
       height: 100%;
-      color: $color-text-muted;
+      color: $color-text-muted-actual; // ADAPTADO
       font-size: $base-font-size-sm * 0.9;
       opacity: 0.6;
     }
      &:hover {
-      background-color: color.adjust($color-card-bg, $lightness: 2%);
+      background-color: color.adjust($color-card-bg-actual, $lightness: 2%); // ADAPTADO
     }
   }
 }
 
 .appointment-details-card-agenda {
-  background-color: $color-appointment-card-bg !important;
-  border: 1px solid $color-border-gray;
-  color: $color-text-light;
+  background-color: $color-appointment-card-bg-actual !important; // ADAPTADO
+  border: 1px solid $color-border-gray; // ADAPTADO
+  color: $color-text-light; // ADAPTADO
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-radius: 0;
-  transition: $base-transition;
+  border-radius: 0; // Mantido, para preencher a célula. Poderia ser $base-border-radius se a célula tivesse padding.
+  transition: $base-transition; // ADAPTADO
 
   &:hover {
     transform: translateY(-1px);
@@ -340,7 +402,7 @@ $altura-config-agenda: 95px;
   }
 
   .card-body {
-    padding: $base-padding-md-vertical $base-padding-md-horizontal;
+    padding: $base-padding-md; // ADAPTADO para shorthand
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -350,14 +412,14 @@ $altura-config-agenda: 95px;
   .cliente-nome-agenda {
     font-size: $base-font-size-md;
     font-weight: $base-font-weight-bold;
-    color: $color-primary;
+    color: $color-neon; // ADAPTADO
     margin-bottom: 0.5rem;
     line-height: 1.3;
   }
 
   .servicos-agenda {
     font-size: $base-font-size-sm;
-    color: $color-text-light;
+    color: $color-text-light; // ADAPTADO
     margin-bottom: 0.8rem;
     flex-grow: 1;
     line-height: 1.4;
@@ -370,7 +432,7 @@ $altura-config-agenda: 95px;
 
   .text-muted-agenda {
     font-style: italic;
-    color: $color-text-muted !important;
+    color: $color-text-muted-actual !important; // ADAPTADO
     font-size: $base-font-size-sm * 0.9;
   }
 
@@ -380,51 +442,47 @@ $altura-config-agenda: 95px;
     align-items: center;
     margin-top: auto;
     padding-top: 0.5rem;
-    border-top: 1px solid $color-border-gray;
+    border-top: 1px solid $color-border-gray; // ADAPTADO
 
     .actions-dropdown-container {
-      position: relative; // <<< ALTERAÇÃO AQUI >>> Essencial para o contexto do menu
-      // z-index: 10; // Opcional, geralmente não necessário se o position:relative estiver aqui
+      position: relative;
 
       .actions-dropdown-toggle {
-        color: $color-text-muted;
+        color: $color-text-muted-actual; // ADAPTADO
         padding: 0.25rem;
         line-height: 1;
-        transition: $base-transition;
+        transition: $base-transition; // ADAPTADO
         &:hover, &:focus, &:active {
-          color: $color-primary; background-color: transparent !important; box-shadow: none !important;
+          color: $color-neon; background-color: transparent !important; box-shadow: none !important; // ADAPTADO
         }
         &::after { display: none; }
         svg { width: 1.1rem; height: 1.1rem; }
       }
 
-      .dropdown-menu {
-        background-color: color.adjust($color-card-bg, $lightness: 10%);
-        border: 1px solid $color-border-gray;
+      .dropdown-menu.show {
+        background-color: color.adjust($color-card-bg-actual, $lightness: 10%); // ADAPTADO
+        border: 1px solid $color-border-gray; // ADAPTADO
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         min-width: 180px;
         padding: 0.35rem;
-        border-radius: math.div($base-border-radius, 2);
-        z-index: 1060; // <<< ALTERAÇÃO AQUI >>> z-index alto para o menu
-                       // Este valor deve ser maior que o z-index das células normais
-                       // e dos cabeçalhos fixos da grade, mas pode ser menor que o
-                       // z-index do calendário principal (.calendario-dropdown-container = 1100)
+        border-radius: math.div($base-border-radius, 1); // ADAPTADO (ou $base-border-radius)
+        z-index: 1060;
 
         .dropdown-item {
-          color: $color-text-light;
+          color: $color-text-light; // ADAPTADO
           font-size: $base-font-size-sm;
-          padding: 0.5rem 1rem;
-          border-radius: math.div($base-border-radius, 2); // Uso de variável para consistência
+          padding: 0.5rem 1rem; // Mantido padding específico para itens
+          border-radius: math.div($base-border-radius, 1); // ADAPTADO (ou $base-border-radius)
           margin: 0.1rem 0;
-          transition: $base-transition; // Mantida a transição original do seu arquivo
+          transition: $base-transition; // ADAPTADO
 
-          &:hover, &:focus { // Mantidos os estilos de hover originais do seu arquivo
-            background-color: $color-bg-hover-subtle;
-            color: $color-primary;
+          &:hover, &:focus {
+            background-color: $color-bg-hover-subtle; // ADAPTADO
+            color: $color-neon; // ADAPTADO
           }
-          &:active { background-color: rgba($color-primary, 0.15); }
+          &:active { background-color: rgba($color-neon, 0.15); } // ADAPTADO
         }
-        .dropdown-divider { border-top-color: $color-border-gray; margin: 0.35rem 0; }
+        .dropdown-divider { border-top-color: $color-border-gray; margin: 0.35rem 0; } // ADAPTADO
       }
     }
   }
@@ -432,32 +490,34 @@ $altura-config-agenda: 95px;
   .status-badge {
     font-size: $base-font-size-sm * 0.75;
     padding: 0.25em 0.75em;
-    border-radius: 20px;
+    border-radius: 20px; // Mantido radius específico para badges
     font-weight: $base-font-weight-bold;
     text-transform: $base-text-transform;
     letter-spacing: $base-letter-spacing * 0.7;
 
-    &.status-espera { background-color: rgba(234, 179, 8, 0.2); color: #fbbf24; border: 1px solid rgba(234, 179, 8, 0.3); }
-    &.status-atendido { background-color: rgba(16, 185, 129, 0.2); color: $color-primary; border: 1px solid rgba(16, 185, 129, 0.3); }
+    &.status-espera { background-color: rgba(234, 179, 8, 0.2); color: #fbbf24; border: 1px solid rgba(234, 179, 8, 0.3); } // Cores de status podem precisar de ajuste para o novo tema
+    &.status-atendido { background-color: rgba($color-neon, 0.2); color: $color-neon; border: 1px solid rgba($color-neon, 0.3); } // ADAPTADO para usar neon
     &.status-desmarcado { background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
   }
 }
 
 .grid-column-span-2 {
   grid-column: 1 / -1;
-  padding: $base-padding-md-vertical $base-padding-md-horizontal;
+  padding: $base-padding-md; // ADAPTADO para shorthand
   text-align: center;
-  border-bottom: 1px solid $color-border-darker;
-  background-color: rgba($color-card-bg, 0.7);
+  border-bottom: 1px solid $color-border-darker-actual; // ADAPTADO
+  background-color: rgba($color-card-bg-actual, 0.7); // ADAPTADO
 }
 
 .alert {
   font-size: $base-font-size-md;
-  border-radius: $base-border-radius;
+  border-radius: $base-border-radius; // ADAPTADO
   border-width: 0;
   padding: 1rem 1.5rem;
   @include card-shadow;
 
+  // As cores dos alertas podem precisar de um redesign para se adequar ao tema neon/preto.
+  // Mantendo as cores originais por enquanto, mas podem destoar.
   &.alert-danger { background-color: rgba(220, 38, 38, 0.15); color: #fca5a5; border-left: 4px solid #ef4444; }
   &.alert-warning { background-color: rgba(234, 179, 8, 0.15); color: #fcd34d; border-left: 4px solid #f59e0b; }
   &.alert-info { background-color: rgba(59, 130, 246, 0.15); color: #93c5fd; border-left: 4px solid #3b82f6; }
@@ -472,9 +532,10 @@ $altura-config-agenda: 95px;
   width: 1.2rem;
   height: 1.2rem;
   border-width: 0.15em;
-  color: $color-primary;
+  color: $color-neon; // ADAPTADO
 }
 
+// Media Queries (Mantidos, mas os valores de padding e font-size dentro deles agora herdam das novas variáveis base)
 @media (max-width: 768px) {
   .agenda-page-container {
     padding: 1rem;
@@ -492,7 +553,7 @@ $altura-config-agenda: 95px;
     }
   }
   .agenda-header-funcionario.sticky-header-funcionario {
-      top: 180px;
+      top: 180px; // Este valor pode precisar de ajuste se a altura do sticky-top-config mudar
   }
   .agenda-grid-funcionario {
     grid-template-columns: 80px 1fr;
@@ -503,8 +564,8 @@ $altura-config-agenda: 95px;
     font-size: $base-font-size-sm * 0.9;
   }
   .appointment-details-card-agenda {
-    .card-body { padding: $base-padding-sm-vertical * 0.8 $base-padding-sm-horizontal * 0.8; }
-    .cliente-nome-agenda { font-size: $base-font-size-md; }
+    .card-body { padding: $base-padding-sm; } // Adaptado para shorthand
+    .cliente-nome-agenda { font-size: $base-font-size-md; } // Herda $base-font-size-md
     .servicos-agenda { font-size: $base-font-size-sm * 0.85; -webkit-line-clamp: 1; }
     .status-badge { font-size: $base-font-size-sm * 0.7; padding: 0.2em 0.5em; }
     .actions-dropdown-container svg { width: 1rem; height: 1rem; }
@@ -521,12 +582,10 @@ $altura-config-agenda: 95px;
     .day-picker-inline-agenda .rdp {
         --rdp-cell-size: 30px;
     }
-    .action-btn.add-new-btn {
+    .action-btn.add-new-btn { // Padding já é $base-padding-sm, ajuste de fonte se necessário
       font-size: $base-font-size-sm * 0.8;
-      padding: ($base-padding-sm-vertical * 0.7) ($base-padding-md-horizontal * 0.7);
     }
-     .botao-data-agenda {
+     .btn.botao-data-agenda { // Padding já é $base-padding-md, ajuste de fonte se necessário
        font-size: $base-font-size-sm * 0.9;
-       padding: $base-padding-sm-vertical $base-padding-sm-horizontal;
      }
 }
