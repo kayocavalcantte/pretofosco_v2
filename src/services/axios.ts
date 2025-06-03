@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://54.198.191.101', // Altere para a URL da API se subir para produção
+  baseURL: 'https://barbearia-api-eiw6.onrender.com'
 });
 
 // Lista de endpoints públicos (que não exigem token)
