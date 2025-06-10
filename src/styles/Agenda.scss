@@ -108,47 +108,67 @@ $altura-config-agenda: 95px;
   display: inline-block;
 }
 
-.btn.action-btn, // Alvo para elementos que têm ambas as classes .btn e .action-btn
-button.action-btn { // Alvo mais específico para tags <button> com a classe .action-btn
-  background-color: $color-neon;
-  border-color: $color-neon; // Importante definir a cor da borda também
-  color: $color-text-dark;
-  padding: $base-padding-md;
+.btn.action-btn {
+  background-color: $color-neon; // ADAPTADO
+  border: none;
+  color: $color-text-dark; // ADAPTADO (para contraste com neon)
+  padding: $base-padding-md; // ADAPTADO para shorthand
   font-family: $base-font-family;
   font-size: $base-font-size-sm;
   font-weight: $base-font-weight-bold;
   letter-spacing: $base-letter-spacing;
   text-transform: $base-text-transform;
-  border-radius: $base-border-radius;
-  transition: $base-transition;
+  border-radius: $base-border-radius; // ADAPTADO
+  transition: $base-transition; // ADAPTADO
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  // Removendo @include hover-effect; para definir o hover explicitamente abaixo com alta especificidade
+  @include hover-effect; // Mixin usa $base-transition
 
-  &:hover,
-  &:focus { // Combinando hover e focus para consistência
-    background-color: $color-neon-hover;
-    border-color: $color-neon-hover; // Cor da borda no hover
-    color: $color-text-dark;
-    transform: translateY(-2px); // Efeito do seu mixin hover-effect
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); // Efeito do seu mixin
+  &:hover {
+    background-color: $color-neon-hover; // ADAPTADO
+    color: $color-text-dark; // Mantido
   }
-
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba($color-neon, 0.4), 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); // Combina box-shadow do focus e do hover
+    box-shadow: 0 0 0 3px rgba($color-neon, 0.4); // ADAPTADO
   }
-
-  // A classe .add-new-btn já será coberta pela especificidade aumentada se estiver no mesmo elemento
   &.add-new-btn {
-     padding: $base-padding-sm;
+     padding: $base-padding-sm; // ADAPTADO - Usando o novo $base-padding-sm
      font-size: $base-font-size-sm * 0.9;
-     // Se precisar de outros estilos específicos para .add-new-btn que não são cobertos
-     // pelas regras de .btn.action-btn, adicione-os aqui.
-     // Ex: background-color: $color-neon !important; // Se ainda houver teimosia
    }
 }
+
+.btn.btn {
+  background-color: $color-neon; // ADAPTADO
+  border: none;
+  color: $color-text-dark; // ADAPTADO (para contraste com neon)
+  padding: $base-padding-md; // ADAPTADO para shorthand
+  font-family: $base-font-family;
+  font-size: $base-font-size-sm;
+  font-weight: $base-font-weight-bold;
+  letter-spacing: $base-letter-spacing;
+  text-transform: $base-text-transform;
+  border-radius: $base-border-radius; // ADAPTADO
+  transition: $base-transition; // ADAPTADO
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  @include hover-effect; // Mixin usa $base-transition
+
+  &:hover {
+    background-color: $color-neon-hover; // ADAPTADO
+    color: $color-text-dark; // Mantido
+  }
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($color-neon, 0.4); // ADAPTADO
+  }
+  &.add-new-btn {
+     padding: $base-padding-sm; // ADAPTADO - Usando o novo $base-padding-sm
+     font-size: $base-font-size-sm * 0.9;
+   }
+  }
 
 .btn.botao-data-agenda {
   background-color: $color-card-header-bg-actual; // ADAPTADO
